@@ -323,8 +323,9 @@ function initContact(data) {
     if (el && val) el.innerHTML = val;
   };
 
-  set('[data-field="email"]', `<a href="mailto:${data.email}">${data.email}</a>`);
   set('[data-field="phone"]', `<a href="tel:${data.phone.replace(/-/g, '')}">${data.phone}</a>`);
+  set('[data-field="email"]', `<a href="mailto:${data.email}">${data.email}</a>`);
+  set('[data-field="instagram"]', `<a href="https://instagram.com/${data.instagram.replace('@', '')}" target="_blank" rel="noopener">${data.instagram}</a>`);
   set('[data-field="address"]', data.address.replace(/\n/g, '<br>'));
   set('[data-field="hours"]', data.hours.replace(/\n/g, '<br>'));
 }

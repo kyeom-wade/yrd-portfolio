@@ -522,15 +522,9 @@ body.loaded {
 .home-work-card {
   position: relative;
   overflow: hidden;
-  cursor: pointer;
-  transition: transform var(--transition-medium);
   flex: 0 0 calc(25% - 6px);
   min-width: calc(25% - 6px);
   container-type: inline-size;
-}
-
-.home-work-card:hover {
-  transform: translateY(-4px);
 }
 
 .home-work-card img {
@@ -538,12 +532,7 @@ body.loaded {
   height: auto;
   max-height: 133cqw;
   object-fit: cover;
-  transition: transform var(--transition-slow);
   display: block;
-}
-
-.home-work-card:hover img {
-  transform: scale(1.02);
 }
 
 .home-work-info {
@@ -579,7 +568,7 @@ body.loaded {
 
 /* Home Contact CTA Section */
 .home-contact {
-  padding: calc(var(--spacing-xl) * 4) 0;
+  padding: calc(var(--spacing-xl) * 2) 0;
 }
 
 .contact-cta {
@@ -609,31 +598,15 @@ body.loaded {
   font-size: 0.875rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: var(--spacing-lg) calc(var(--spacing-xl) * 1.5);
+  padding: var(--spacing-md) var(--spacing-xl);
   border: 1px solid var(--color-text);
   border-radius: 2px;
   color: var(--color-text);
-  transition: all var(--transition-medium);
-  position: relative;
-  overflow: hidden;
-}
-
-.cta-button::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--color-text);
-  transform: translateY(100%);
-  transition: transform var(--transition-medium);
-  z-index: -1;
-}
-
-.cta-button:hover::before {
-  transform: translateY(0);
+  transition: all var(--transition-fast);
 }
 
 .cta-button:hover {
-  color: var(--color-bg);
+  filter: brightness(0.9);
 }
 
 /* ============================================
@@ -641,7 +614,7 @@ body.loaded {
    ============================================ */
 .works-page {
   min-height: 100vh;
-  padding: var(--spacing-xl);
+  padding: calc(80px + var(--spacing-xl)) var(--spacing-xl) var(--spacing-xl);
 }
 
 .works-header {
@@ -653,9 +626,6 @@ body.loaded {
   font-size: 2.5rem;
   font-weight: 400;
   letter-spacing: 0.02em;
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
   margin-bottom: var(--spacing-lg);
 }
 
@@ -668,7 +638,7 @@ body.loaded {
 
 .filter-buttons {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-lg);
   flex-wrap: wrap;
 }
 
@@ -676,43 +646,19 @@ body.loaded {
   font-size: 0.75rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: var(--spacing-sm) var(--spacing-lg);
+  padding: 0;
   color: var(--color-text-muted);
   background: transparent;
-  border: 1px solid var(--color-text-dim);
-  border-radius: 2px;
+  border: none;
   transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
-}
-
-.filter-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--color-text);
-  transform: translateY(100%);
-  transition: transform var(--transition-medium);
-}
-
-.filter-btn span {
-  position: relative;
-  z-index: 1;
 }
 
 .filter-btn:hover {
-  border-color: var(--color-text-muted);
-  color: var(--color-text);
+  opacity: 0.9;
 }
 
 .filter-btn.active {
-  border-color: var(--color-text);
-  color: var(--color-bg);
-  background: var(--color-text);
-}
-
-.filter-btn:active {
-  transform: scale(0.95);
+  color: var(--color-text);
 }
 
 .works-grid {
@@ -723,77 +669,41 @@ body.loaded {
 
 .work-card {
   opacity: 1;
-  transform: scale(1);
-  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .work-card.hidden {
-  opacity: 0;
-  transform: scale(0.9);
-  pointer-events: none;
-  position: absolute;
-  visibility: hidden;
+  display: none;
 }
 
 .work-card {
   position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  aspect-ratio: 4 / 3;
-  border-radius: 2px;
-  box-shadow: 0 0 0 1px rgba(245, 245, 240, 0.05);
-  transition: box-shadow var(--transition-medium), transform var(--transition-medium);
-}
-
-.work-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  transform: translateY(-4px);
+  container-type: inline-size;
 }
 
 .work-card .card-image {
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: 133cqw;
   object-fit: cover;
-  transition: transform var(--transition-slow);
-  will-change: transform;
+  display: block;
 }
 
 .work-card .card-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(10, 10, 10, 0.9) 0%,
-    rgba(10, 10, 10, 0.4) 50%,
-    rgba(10, 10, 10, 0) 100%
-  );
-  opacity: 0;
-  transition: opacity var(--transition-medium);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: var(--spacing-lg);
-}
-
-.work-card:hover .card-image {
-  transform: scale(1.1);
-}
-
-.work-card:hover .card-overlay {
-  opacity: 1;
+  padding: calc(var(--spacing-lg) / 2) 0;
 }
 
 .work-card .card-title {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: 0.9375rem;
   font-weight: 400;
   margin-bottom: var(--spacing-sm);
+  letter-spacing: 0.02em;
 }
 
 .work-card .card-meta {
   font-size: 0.75rem;
   color: var(--color-text-muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 
 /* ============================================
@@ -809,8 +719,9 @@ body.loaded {
 .contact-left {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: var(--spacing-xl);
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: calc(80px + var(--spacing-xl)) var(--spacing-xl) var(--spacing-xl);
 }
 
 .contact-left h1 {
@@ -818,10 +729,14 @@ body.loaded {
   font-size: 2.5rem;
   font-weight: 400;
   letter-spacing: 0.02em;
-  margin-bottom: var(--spacing-xl);
+}
+
+.contact-right {
   display: flex;
-  align-items: baseline;
-  gap: 1rem;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: calc(80px + var(--spacing-xl)) var(--spacing-xl) var(--spacing-xl);
+  border-left: 1px solid var(--color-text-dim);
 }
 
 .contact-info-group {
@@ -843,77 +758,7 @@ body.loaded {
 }
 
 .contact-info-group .value a {
-  transition: color var(--transition-fast);
-}
-
-.contact-info-group .value a:hover {
-  color: var(--color-accent);
-}
-
-.contact-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--spacing-xl);
-  border-left: 1px solid var(--color-text-dim);
-}
-
-.contact-form .form-group {
-  margin-bottom: var(--spacing-lg);
-}
-
-.contact-form label {
-  display: block;
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  margin-bottom: var(--spacing-sm);
-}
-
-.contact-form input,
-.contact-form textarea {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--color-text-dim);
-  padding: var(--spacing-sm) 0;
   color: var(--color-text);
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  outline: none;
-  transition: border-color var(--transition-fast);
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-  border-color: var(--color-text-muted);
-}
-
-.contact-form textarea {
-  resize: none;
-  min-height: 100px;
-}
-
-.contact-form .submit-btn {
-  font-size: 0.8125rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  padding: var(--spacing-md) 0;
-  transition: all var(--transition-fast);
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-}
-
-.contact-form .submit-btn:hover {
-  color: var(--color-text);
-  transform: translateX(4px);
-}
-
-.contact-form .submit-btn:active {
-  transform: translateX(2px) scale(0.98);
 }
 
 /* ============================================
@@ -966,14 +811,9 @@ body.loaded {
   font-size: 0.875rem;
   letter-spacing: 0.1em;
   color: var(--color-text-muted);
-  transition: color var(--transition-fast);
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-}
-
-.back-link a:hover {
-  color: var(--color-text);
 }
 
 .detail-title {
@@ -1066,12 +906,6 @@ body.loaded {
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
-  transition: transform var(--transition-slow);
-  cursor: pointer;
-}
-
-.gallery-image:hover {
-  transform: scale(1.02);
 }
 
 .detail-navigation {
@@ -1088,14 +922,8 @@ body.loaded {
   flex-direction: column;
   padding: var(--spacing-xl);
   background: var(--color-bg);
-  transition: background var(--transition-medium);
   min-height: 180px;
   justify-content: center;
-}
-
-.nav-prev:hover,
-.nav-next:hover {
-  background: rgba(255, 255, 255, 0.02);
 }
 
 .nav-prev {
