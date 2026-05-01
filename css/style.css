@@ -4,11 +4,11 @@
 
 /* --- Custom Properties --- */
 :root {
-  --color-bg: #FFFFFF;
-  --color-text: #f191919;
-  --color-text-muted: #3d3d40;
-  --color-text-dim: #3d3d40;
-  --color-accent: #201f1e;
+  --color-bg: #0a0a0a;
+  --color-text: #f5f5f0;
+  --color-text-muted: rgba(245, 245, 240, 0.5);
+  --color-text-dim: rgba(245, 245, 240, 0.3);
+  --color-accent: #c8b891;
   --color-overlay: rgba(10, 10, 10, 0.4);
 
   --font-serif: 'Noto Serif KR', 'Noto Serif', Georgia, serif;
