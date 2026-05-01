@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+
+# SPA-style redirects for clean URLs (optional)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YRD — Architecture & Space Design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Page Transition -->
+  <div class="page-transition"></div>
+
+  <!-- Right Logo Mark -->
+  <div class="logo-mark">YRD</div>
+
+  <!-- Hero Slider -->
+  <section class="hero">
+    <div class="hero-slides"></div>
+
+    <!-- Project Info -->
+    <div class="project-info">
+      <h2 class="project-title"></h2>
+      <p class="project-meta"></p>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+      <button class="prev-btn" aria-label="이전 슬라이드">&larr;</button>
+      <span class="counter-text">1 / 7</span>
+      <button class="next-btn" aria-label="다음 슬라이드">&rarr;</button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="slide-progress">
+      <div class="progress-bar"></div>
+    </div>
+  </section>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html" class="brand">YRD</a>
+    <ul class="nav-links">
+      <li><a href="works.html">Works</a></li>
+      <li><a href="philosophy.html">Philosophy</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <script src="js/main.js"></script>
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) window.netlifyIdentity.on("login", () => document.location.href = "/admin/");
+      });
+    }
+  </script>
+</body>
+</html>
