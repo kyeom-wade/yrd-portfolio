@@ -291,19 +291,24 @@
              style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--gray-3);border-radius:var(--radius);font-family:inherit;font-size:12px;outline:none;">
       <img id="kv-image-preview" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:4px;display:none;margin-top:8px;" alt="">
 
-      <div class="form-row" style="margin-top:16px;">
+      <div class="form-group" style="margin-top:16px;">
+        <label>제목 1행 *</label>
+        <input type="text" id="kv-title" placeholder="청담">
+      </div>
+      <div class="form-group">
+        <label>제목 2행</label>
+        <input type="text" id="kv-title2" placeholder="라운지">
+        <p class="form-hint">비워두면 1행만 표시됩니다</p>
+      </div>
+      <div class="form-row">
         <div class="form-group">
-          <label>제목 *</label>
-          <input type="text" id="kv-title" placeholder="제주 스테이">
+          <label>위치</label>
+          <input type="text" id="kv-location" placeholder="서울 강남구">
         </div>
         <div class="form-group">
           <label>연도</label>
           <input type="text" id="kv-year" placeholder="2024">
         </div>
-      </div>
-      <div class="form-group">
-        <label>위치</label>
-        <input type="text" id="kv-location" placeholder="서울 강남구">
       </div>
 
       <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
@@ -831,10 +836,11 @@ async function kvDragDrop(e) {
 
 function openNewKV() {
   document.getElementById('kv-modal-title').textContent = '새 메인배너 항목';
-  document.getElementById('kv-index').value = '';
-  document.getElementById('kv-image').value = '';
-  document.getElementById('kv-title').value = '';
-  document.getElementById('kv-year').value = '';
+  document.getElementById('kv-index').value    = '';
+  document.getElementById('kv-image').value    = '';
+  document.getElementById('kv-title').value    = '';
+  document.getElementById('kv-title2').value   = '';
+  document.getElementById('kv-year').value     = '';
   document.getElementById('kv-location').value = '';
   document.getElementById('kv-image-preview').style.display = 'none';
   document.getElementById('kv-modal').classList.add('open');
@@ -847,6 +853,7 @@ function openEditKV(i) {
   document.getElementById('kv-index').value    = i;
   document.getElementById('kv-image').value    = item.image    || '';
   document.getElementById('kv-title').value    = item.title    || '';
+  document.getElementById('kv-title2').value   = item.title2   || '';
   document.getElementById('kv-year').value     = item.year     || '';
   document.getElementById('kv-location').value = item.location || '';
   previewKVImageSrc(item.image);
@@ -863,9 +870,11 @@ async function saveKV() {
   const title = document.getElementById('kv-title').value.trim();
   if (!title) { toast('제목을 입력해주세요', 'error'); return; }
 
+  const title2 = document.getElementById('kv-title2').value.trim();
   const item = {
     image:    document.getElementById('kv-image').value.trim(),
     title,
+    ...(title2 && { title2 }),
     location: document.getElementById('kv-location').value.trim(),
     year:     document.getElementById('kv-year').value.trim(),
   };

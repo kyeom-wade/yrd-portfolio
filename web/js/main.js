@@ -62,7 +62,16 @@ function initHeroSlider(projects) {
     titleEl.offsetHeight;
     metaEl.offsetHeight;
 
-    titleEl.textContent = project.title;
+    titleEl.innerHTML = '';
+    const line1 = document.createElement('span');
+    line1.textContent = project.title || '';
+    titleEl.appendChild(line1);
+    if (project.title2) {
+      titleEl.appendChild(document.createElement('br'));
+      const line2 = document.createElement('span');
+      line2.textContent = project.title2;
+      titleEl.appendChild(line2);
+    }
     metaEl.innerHTML = `<span>${project.location}</span><span>${project.year}</span>`;
     counterText.textContent = `${index + 1} / ${projects.length}`;
 
