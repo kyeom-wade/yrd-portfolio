@@ -653,8 +653,7 @@ async function processImageFiles(files, target) {
 async function uploadImageToGitHub(file) {
   const compressed = await compressImage(file, 1920, 0.85);
   const base64     = compressed.split(',')[1];
-  const ext        = file.name.split('.').pop().toLowerCase().replace('jpg', 'jpeg') || 'jpeg';
-  const filename   = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const filename   = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.jpeg`;
   const path       = `web/images/uploads/${filename}`;
 
   const existing = await ghFetch(`${path}?ref=${GITHUB_BRANCH}`).catch(() => null);
