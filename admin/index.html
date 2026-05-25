@@ -670,7 +670,7 @@ async function uploadImageToGitHub(file) {
     body: JSON.stringify(body),
   });
 
-  return `https://kyeom-wade.github.io/yrd-portfolio/${path}`;
+  return `https://kyeom-wade.github.io/yrd-portfolio/images/uploads/${filename}`;
 }
 
 function compressImage(file, maxWidth, quality) {
