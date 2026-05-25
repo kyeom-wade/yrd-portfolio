@@ -773,7 +773,6 @@ body.loaded {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  animation: slowZoom 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .detail-info {
