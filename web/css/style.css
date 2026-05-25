@@ -716,7 +716,7 @@ button {
 
 .work-card .card-title {
   font-family: var(--font-serif);
-  font-size: var(--text-sm);
+  font-size: var(--text-lg);
   font-weight: 400;
   margin-bottom: var(--spacing-sm);
   letter-spacing: var(--tracking-tight);
