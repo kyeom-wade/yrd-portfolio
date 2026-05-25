@@ -21,27 +21,6 @@
     ]
   },
   {
-    "id": "hannam-residence",
-    "title": "한남동 주거 공간",
-    "location": "서울 용산구",
-    "year": "2024",
-    "category": "Living",
-    "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
-    "thumbnail": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
-    "description": "도심 속 자연을 담아낸 주거 공간. 내부와 외부의 경계를 허물고, 빛과 바람이 자유롭게 흐르는 개방적인 구조로 설계했다.",
-    "specs": {
-      "area": "165㎡",
-      "usage": "단독주택",
-      "structure": "철근콘크리트조",
-      "materials": "노출콘크리트, 티크원목, 유리"
-    },
-    "gallery": [
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
-      "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=1920&q=80",
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1920&q=80"
-    ]
-  },
-  {
     "id": "jeju-stay",
     "title": "제주 스테이",
     "location": "제주 서귀포시",
@@ -102,6 +81,27 @@
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80",
       "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1920&q=80",
       "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1920&q=80"
+    ]
+  },
+  {
+    "id": "hannam-residence",
+    "title": "한남동 주거 공간",
+    "location": "서울 용산구",
+    "year": "2024",
+    "category": "Living",
+    "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+    "description": "도심 속 자연을 담아낸 주거 공간. 내부와 외부의 경계를 허물고, 빛과 바람이 자유롭게 흐르는 개방적인 구조로 설계했다.",
+    "specs": {
+      "area": "165㎡",
+      "usage": "단독주택",
+      "structure": "철근콘크리트조",
+      "materials": "노출콘크리트, 티크원목, 유리"
+    },
+    "gallery": [
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
+      "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=1920&q=80",
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1920&q=80"
     ]
   },
   {
