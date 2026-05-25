@@ -107,7 +107,7 @@ button {
   top: 0;
   left: 0;
   right: 0;
-  height: 56px;
+  height: 48px;
   background: transparent;
   z-index: 1000;
 }
@@ -233,7 +233,7 @@ button {
   position: relative;
   width: 100%;
   height: 100vh;
-  height: calc(var(--vh, 1vh) * 100);
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -264,15 +264,6 @@ button {
   opacity: 1;
 }
 
-/* Scale animation on active slide */
-.hero-slide.active {
-  animation: slowZoom 8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-}
-
-@keyframes slowZoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.05); }
-}
 
 /* --- Project Info Overlay --- */
 .project-info {
@@ -463,6 +454,7 @@ button {
   display: flex;
   gap: 8px;
   transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+  touch-action: pan-y;
 }
 
 .carousel-btn {
@@ -798,7 +790,7 @@ button {
   height: 85vh;
   height: calc(var(--vh, 1vh) * 85);
   overflow: hidden;
-  margin-top: 56px;
+  margin-top: 48px;
 }
 
 .hero-image-container {
@@ -940,7 +932,7 @@ button {
 
 .gallery-text-block__heading {
   font-family: var(--font-serif);
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   font-weight: 600;
   letter-spacing: var(--tracking-tight);
   margin-bottom: var(--spacing-md);
@@ -948,7 +940,7 @@ button {
 
 .gallery-text-block__body {
   font-family: var(--font-serif);
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   line-height: 1.5;
   letter-spacing: -0.03em;
   color: var(--color-text);
@@ -1025,9 +1017,14 @@ button {
     --spacing-lg: 24px;
   }
 
+  .gallery-text-block {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
 /* Top Header Mobile */
   .top-header {
-    height: 60px;
+    height: 48px;
   }
 
   .header-content {
@@ -1153,7 +1150,7 @@ button {
 
   /* Works Mobile */
   .works-page {
-    padding: calc(60px + var(--spacing-lg)) var(--spacing-md) calc(var(--nav-height) + var(--spacing-lg));
+    padding: calc(48px + var(--spacing-lg)) var(--spacing-md) calc(var(--nav-height) + var(--spacing-lg));
   }
 
   .works-header h1 {
@@ -1202,7 +1199,7 @@ button {
 
   /* Project Detail Mobile */
   .detail-hero {
-    margin-top: 56px;
+    margin-top: 48px;
   }
 
   .detail-title {
