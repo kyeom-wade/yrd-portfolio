@@ -27,31 +27,6 @@ function initViewportHeight() {
   window.addEventListener('resize', setFillHeight);
 }
 
-// --- Page Transition ---
-function initPageTransition() {
-  const overlay = document.querySelector('.page-transition');
-  if (!overlay) return;
-
-  // Fade in on load
-  requestAnimationFrame(() => {
-    document.body.classList.add('loaded');
-    overlay.classList.add('hidden');
-  });
-
-  document.querySelectorAll('a[href]').forEach(link => {
-    const href = link.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto')) return;
-
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.body.classList.remove('loaded');
-      overlay.classList.remove('hidden');
-      setTimeout(() => {
-        window.location.href = href;
-      }, 700);
-    });
-  });
-}
 
 // --- Hero Slider ---
 function initHeroSlider(projects) {
@@ -415,7 +390,6 @@ function initHomeFeaturedWorks(projects) {
 // --- Init ---
 document.addEventListener('DOMContentLoaded', async () => {
   initViewportHeight();
-  initPageTransition();
 
   const projects = await loadJSON('data/projects.json');
 

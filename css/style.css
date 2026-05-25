@@ -83,17 +83,7 @@ body.loaded {
 }
 
 .page-transition {
-  position: fixed;
-  inset: 0;
-  background: var(--color-bg);
-  z-index: 9999;
-  opacity: 1;
-  transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
-  pointer-events: none;
-}
-
-.page-transition.hidden {
-  opacity: 0;
+  display: none;
 }
 
 /* --- Top Header (Scroll Responsive) --- */
