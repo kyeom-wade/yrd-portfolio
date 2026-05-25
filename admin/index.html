@@ -701,15 +701,46 @@ function renderGalleryList(urls) {
   urls.forEach(url => addGalleryItem(url));
 }
 
+let galleryDragSrc = null;
+
 function addGalleryItem(url = '') {
   const el  = document.getElementById('gallery-list');
   const div = document.createElement('div');
   div.className = 'gallery-item';
+  div.draggable = true;
   div.innerHTML = `
+    <span class="gallery-drag-handle" title="드래그하여 순서 변경">⠿</span>
     <img class="gallery-preview" src="${escHtml(url)}" alt="" onerror="this.src=''">
     <input type="url" value="${escHtml(url)}" placeholder="https://..." oninput="updateGalleryPreview(this)">
     <button class="gallery-remove" onclick="this.closest('.gallery-item').remove()" title="삭제">&times;</button>
   `;
+  div.addEventListener('dragstart', e => {
+    galleryDragSrc = div;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => div.classList.add('dragging'), 0);
+  });
+  div.addEventListener('dragend', () => {
+    div.classList.remove('dragging');
+    document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('drag-over'));
+  });
+  div.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('drag-over'));
+    if (div !== galleryDragSrc) div.classList.add('drag-over');
+  });
+  div.addEventListener('drop', e => {
+    e.preventDefault();
+    if (!galleryDragSrc || galleryDragSrc === div) return;
+    div.classList.remove('drag-over');
+    const list = document.getElementById('gallery-list');
+    const items = [...list.children];
+    const srcIdx = items.indexOf(galleryDragSrc);
+    const tgtIdx = items.indexOf(div);
+    if (srcIdx < tgtIdx) list.insertBefore(galleryDragSrc, div.nextSibling);
+    else list.insertBefore(galleryDragSrc, div);
+    galleryDragSrc = null;
+  });
   el.appendChild(div);
 }
 
