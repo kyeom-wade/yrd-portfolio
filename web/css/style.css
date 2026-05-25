@@ -935,7 +935,7 @@ button {
 }
 
 .gallery-text-block {
-  padding: var(--spacing-xl) 8%;
+  padding: var(--spacing-xl) 16%;
 }
 
 .gallery-text-block__heading {
