@@ -689,7 +689,7 @@ const GITHUB_BRANCH  = 'main';
 // ═══════════════════════════════════════════════
 
 let state = {
-  token: sessionStorage.getItem('cms_token') || '',
+  token: localStorage.getItem('cms_token') || '',
   projects: [],
   projectsSHA: '',
   contact: {},
@@ -715,12 +715,12 @@ function doLogin() {
   }
 
   state.token = token;
-  sessionStorage.setItem('cms_token', token);
+  localStorage.setItem('cms_token', token);
   showApp();
 }
 
 function logout() {
-  sessionStorage.removeItem('cms_token');
+  localStorage.removeItem('cms_token');
   state.token = '';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
