@@ -127,13 +127,13 @@ button {
 .header-brand {
   display: flex;
   align-items: center;
-  line-height: 0;
-}
-
-.header-logo {
-  height: 28px;
-  width: auto;
-  display: block;
+  font-family: var(--font-brand);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  text-decoration: none;
+  line-height: 1;
 }
 
 .header-nav {
@@ -166,7 +166,7 @@ button {
   text-transform: uppercase;
   color: var(--color-text);
   padding: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity 0.3s ease;
 }
 
 .menu-btn:hover {
@@ -217,6 +217,49 @@ button {
   opacity: 0.5;
 }
 
+/* Overlay brand — two-step animation: yrd → yeorum design studio */
+.overlay-brand {
+  position: absolute;
+  top: 0;
+  left: var(--spacing-xl);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-family: var(--font-brand);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.menu-overlay.is-open .overlay-brand {
+  opacity: 1;
+  transition-delay: 0.15s;
+}
+
+/* Fill wrappers — hidden until morph */
+.ob-f {
+  display: inline-block;
+  overflow: hidden;
+  max-width: 0;
+  white-space: nowrap;
+  transition: max-width 0.85s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.ob-fi {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Each fill expands to its content width */
+.overlay-brand.is-morphed .ob-f1 { max-width: 1.6em; }   /* eo */
+.overlay-brand.is-morphed .ob-f2 { max-width: 2.2em; }   /* um  */
+.overlay-brand.is-morphed .ob-f3 { max-width: 9em; }     /* esign studio */
+
 .overlay-nav {
   position: absolute;
   top: var(--header-height);
@@ -256,8 +299,8 @@ button {
 }
 
 /* --- Home: transparent + white text --- */
-.header-light .header-logo {
-  filter: brightness(0) invert(1);
+.header-light .header-brand {
+  color: #ffffff;
 }
 
 .header-light .header-nav a {
@@ -526,10 +569,16 @@ button {
   padding: 0;
 }
 
-.home-works .section-header {
+.home-works .section-top {
   padding-left: var(--spacing-xl);
   padding-right: var(--spacing-xl);
-  margin-bottom: calc(var(--spacing-lg) * -1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.home-works .section-header {
+  margin-bottom: 0;
 }
 
 .home-works .section-header {
@@ -540,8 +589,19 @@ button {
 }
 
 .home-works .section-header h2 {
-  font-size: var(--text-lg);
+  font-family: var(--font-brand);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  letter-spacing: -0.02em;
   margin-bottom: 0;
+}
+
+.section-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  line-height: var(--leading-normal);
+  letter-spacing: -0.03em;
 }
 
 .home-works-carousel {

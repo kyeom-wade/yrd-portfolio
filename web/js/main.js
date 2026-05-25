@@ -9,17 +9,34 @@
   const menuOverlay = document.getElementById('menuOverlay');
   if (!menuBtn || !menuOverlay) return;
 
-  menuBtn.addEventListener('click', () => {
-    menuOverlay.classList.add('is-open');
-  });
+  const overlayBrand = menuOverlay.querySelector('.overlay-brand');
+  let morphTimer = null;
+  let resetTimer = null;
 
-  menuClose.addEventListener('click', () => {
+  function openMenu() {
+    clearTimeout(resetTimer);
+    menuOverlay.classList.add('is-open');
+    // Step 2: yrd spreads and full text fades in
+    morphTimer = setTimeout(() => {
+      if (overlayBrand) overlayBrand.classList.add('is-morphed');
+    }, 550);
+  }
+
+  function closeMenu() {
+    clearTimeout(morphTimer);
     menuOverlay.classList.remove('is-open');
-  });
+    // Reset after overlay fades out so the reverse animation isn't visible
+    resetTimer = setTimeout(() => {
+      if (overlayBrand) overlayBrand.classList.remove('is-morphed');
+    }, 420);
+  }
+
+  menuBtn.addEventListener('click', openMenu);
+  if (menuClose) menuClose.addEventListener('click', closeMenu);
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && menuOverlay.classList.contains('is-open')) {
-      menuOverlay.classList.remove('is-open');
+      closeMenu();
     }
   });
 })();
@@ -454,7 +471,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     initProjectDetail(projects);
   }
 
-if (document.querySelector('.contact-page')) {
+if (document.querySelector('.home-works')) {
+    const data = await loadJSON('data/home.json');
+    if (data) {
+      const bodyEl = document.querySelector('.section-body');
+      if (bodyEl && data.projectsBody) bodyEl.textContent = data.projectsBody;
+    }
+  }
+
+  if (document.querySelector('.contact-page')) {
     const data = await loadJSON('data/contact.json');
     initContact(data);
   }
