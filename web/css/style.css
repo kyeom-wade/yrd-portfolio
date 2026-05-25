@@ -949,7 +949,8 @@ button {
 .gallery-text-block__body {
   font-family: var(--font-serif);
   font-size: var(--text-md);
-  line-height: var(--leading-loose);
+  line-height: 1.5;
+  letter-spacing: -0.03em;
   color: var(--color-text);
   white-space: pre-line;
 }
