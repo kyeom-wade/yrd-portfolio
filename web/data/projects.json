@@ -1,16 +1,16 @@
 [
   {
     "id": "jeju-stay",
-    "title": "제주 스테이",
-    "location": "제주 서귀포시",
-    "year": "2023",
+    "title": "여름디자인 테스트",
+    "location": "서울시 강남구",
+    "year": "2026.05",
     "category": "Commercial",
     "image": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1920&q=80",
     "thumbnail": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=800&q=80",
     "description": "제주의 자연과 대화하는 공간. 현무암과 목재를 활용해 땅의 기억을 담아냈고, 바다를 향한 전망을 극대화했다.",
     "specs": {
       "area": "420㎡",
-      "usage": "게스트하우스",
+      "usage": "사무공간",
       "structure": "목구조",
       "materials": "현무암, 삼나무, 유리"
     },
