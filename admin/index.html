@@ -46,12 +46,13 @@
 
   <main class="app-main">
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('projects', this)">프로젝트</button>
+      <button class="tab-btn active" onclick="switchTab('kv', this)">메인배너</button>
+      <button class="tab-btn" onclick="switchTab('projects', this)">프로젝트</button>
       <button class="tab-btn" onclick="switchTab('contact', this)">연락처 정보</button>
     </div>
 
     <!-- ── PROJECTS TAB ── -->
-    <div id="tab-projects" class="tab-panel active">
+    <div id="tab-projects" class="tab-panel">
       <div class="section-header">
         <div>
           <div class="section-title">프로젝트 관리</div>
@@ -66,6 +67,25 @@
       <div id="projects-empty" class="empty-state" style="display:none;">
         <h3>프로젝트가 없습니다</h3>
         <p>새 프로젝트를 추가해보세요</p>
+      </div>
+    </div>
+
+    <!-- ── KV TAB ── -->
+    <div id="tab-kv" class="tab-panel active">
+      <div class="section-header">
+        <div>
+          <div class="section-title">메인배너 관리</div>
+          <div class="section-sub">메인 히어로 배너에 노출되는 이미지를 관리합니다. 드래그로 순서를 변경할 수 있습니다</div>
+        </div>
+        <button class="btn btn-primary" onclick="openNewKV()">+ 새 항목</button>
+      </div>
+      <div id="kv-loading" class="loading">
+        <div class="spinner"></div> 불러오는 중...
+      </div>
+      <div id="kv-list" class="project-list" style="display:none;"></div>
+      <div id="kv-empty" class="empty-state" style="display:none;">
+        <h3>KV 항목이 없습니다</h3>
+        <p>새 항목을 추가해보세요</p>
       </div>
     </div>
 
@@ -243,6 +263,57 @@
   </div>
 </div>
 
+<!-- ────────────────── KV MODAL ────────────────── -->
+<div id="kv-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="kv-modal-title">새 메인배너 항목</span>
+      <button class="modal-close" onclick="closeKVModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="kv-index">
+
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px;color:var(--gray-1);">이미지</div>
+      <div style="font-size:11px;color:var(--gray-2);margin-bottom:10px;">권장 1920×1080 (16:9)</div>
+      <div class="drop-zone" id="kv-drop-zone"
+           ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+           ondrop="handleDrop(event, 'kv')">
+        <input type="file" accept="image/*" onchange="handleFileSelect(event, 'kv')">
+        <div class="drop-zone-icon">🖼️</div>
+        <div class="drop-zone-text"><strong>클릭하거나 드래그</strong></div>
+        <div class="drop-zone-hint">자동 압축됨</div>
+      </div>
+      <div class="upload-progress" id="kv-upload-progress">
+        <div class="spinner" style="width:14px;height:14px;"></div>
+        <span id="kv-upload-text">업로드 중...</span>
+      </div>
+      <input type="url" id="kv-image" placeholder="또는 URL 직접 입력" oninput="previewKVImage(this)"
+             style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--gray-3);border-radius:var(--radius);font-family:inherit;font-size:12px;outline:none;">
+      <img id="kv-image-preview" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:4px;display:none;margin-top:8px;" alt="">
+
+      <div class="form-row" style="margin-top:16px;">
+        <div class="form-group">
+          <label>제목 *</label>
+          <input type="text" id="kv-title" placeholder="제주 스테이">
+        </div>
+        <div class="form-group">
+          <label>연도</label>
+          <input type="text" id="kv-year" placeholder="2024">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>위치</label>
+        <input type="text" id="kv-location" placeholder="서울 강남구">
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+        <button class="btn btn-secondary" onclick="closeKVModal()">취소</button>
+        <button class="btn btn-primary" onclick="saveKV()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ────────────────── CONFIRM ────────────────── -->
 <div id="confirm-overlay" class="confirm-overlay">
   <div class="confirm-box">
@@ -271,6 +342,8 @@ let state = {
   token: localStorage.getItem('cms_token') || '',
   projects: [],
   projectsSHA: '',
+  kv: [],
+  kvSHA: '',
   contact: {},
   contactSHA: '',
 };
@@ -315,7 +388,7 @@ document.addEventListener('keydown', e => {
 async function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  await Promise.all([loadProjects(), loadContact()]);
+  await Promise.all([loadProjects(), loadKV(), loadContact()]);
 }
 
 function openSite() {
@@ -558,6 +631,9 @@ async function processImageFiles(files, target) {
       } else if (target === 'thumb') {
         document.getElementById('p-thumbnail').value = url;
         previewThumbSrc(url);
+      } else if (target === 'kv') {
+        document.getElementById('kv-image').value = url;
+        previewKVImageSrc(url);
       } else {
         addGalleryItem(url);
       }
@@ -674,6 +750,161 @@ async function doDeleteProject() {
   closeConfirm();
   renderProjects();
   await persistProjects(`프로젝트 삭제: ${name}`);
+}
+
+// ── KV ────────────────────────────────────────
+async function loadKV() {
+  try {
+    const { content, sha } = await readFile('web/data/kv.json');
+    state.kv    = Array.isArray(content) ? content : [];
+    state.kvSHA = sha;
+    renderKV();
+  } catch (e) {
+    toast('KV 로딩 실패: ' + e.message, 'error');
+    document.getElementById('kv-loading').innerHTML = `<span style="color:var(--danger)">로딩 실패. 토큰을 확인하세요.</span>`;
+  }
+}
+
+function renderKV() {
+  const loading = document.getElementById('kv-loading');
+  const list    = document.getElementById('kv-list');
+  const empty   = document.getElementById('kv-empty');
+
+  loading.style.display = 'none';
+
+  if (!state.kv.length) {
+    list.style.display  = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  list.style.display  = 'flex';
+  empty.style.display = 'none';
+  list.innerHTML = state.kv.map((item, i) => `
+    <div class="project-card" draggable="true" data-index="${i}"
+         ondragstart="kvDragStart(event)" ondragover="dragOver(event)" ondrop="kvDragDrop(event)">
+      <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
+      ${item.image
+        ? `<img class="project-thumb" src="${escHtml(item.image)}" alt="" onerror="this.style.display='none'">`
+        : `<div class="project-thumb-placeholder">🖼️</div>`}
+      <div class="project-info">
+        <div class="project-name">${escHtml(item.title || '(제목 없음)')}</div>
+        <div class="project-meta-line">${item.location ? escHtml(item.location) + ' · ' : ''}${item.year || ''}</div>
+      </div>
+      <div class="project-actions">
+        <button class="btn btn-secondary btn-sm" onclick="openEditKV(${i})">수정</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteKV(${i})">삭제</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function persistKV(msg = 'KV 업데이트') {
+  setSaveStatus(true);
+  try {
+    const res = await writeFile('web/data/kv.json', state.kvSHA, state.kv, `[CMS] ${msg}`);
+    state.kvSHA = res.content.sha;
+    toast('저장되었습니다 ✓', 'success');
+  } catch (e) {
+    toast('저장 실패: ' + e.message, 'error');
+  } finally {
+    setSaveStatus(false);
+  }
+}
+
+let kvDragSrcIndex = null;
+function kvDragStart(e) {
+  kvDragSrcIndex = +e.currentTarget.dataset.index;
+  e.dataTransfer.effectAllowed = 'move';
+}
+async function kvDragDrop(e) {
+  e.preventDefault();
+  const target = +e.currentTarget.dataset.index;
+  if (kvDragSrcIndex === null || kvDragSrcIndex === target) return;
+  const items = [...state.kv];
+  const [moved] = items.splice(kvDragSrcIndex, 1);
+  items.splice(target, 0, moved);
+  state.kv = items;
+  renderKV();
+  await persistKV('KV 순서 변경');
+}
+
+function openNewKV() {
+  document.getElementById('kv-modal-title').textContent = '새 메인배너 항목';
+  document.getElementById('kv-index').value = '';
+  document.getElementById('kv-image').value = '';
+  document.getElementById('kv-title').value = '';
+  document.getElementById('kv-year').value = '';
+  document.getElementById('kv-location').value = '';
+  document.getElementById('kv-image-preview').style.display = 'none';
+  document.getElementById('kv-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function openEditKV(i) {
+  const item = state.kv[i];
+  document.getElementById('kv-modal-title').textContent = '메인배너 수정';
+  document.getElementById('kv-index').value    = i;
+  document.getElementById('kv-image').value    = item.image    || '';
+  document.getElementById('kv-title').value    = item.title    || '';
+  document.getElementById('kv-year').value     = item.year     || '';
+  document.getElementById('kv-location').value = item.location || '';
+  previewKVImageSrc(item.image);
+  document.getElementById('kv-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeKVModal() {
+  document.getElementById('kv-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function saveKV() {
+  const title = document.getElementById('kv-title').value.trim();
+  if (!title) { toast('제목을 입력해주세요', 'error'); return; }
+
+  const item = {
+    image:    document.getElementById('kv-image').value.trim(),
+    title,
+    location: document.getElementById('kv-location').value.trim(),
+    year:     document.getElementById('kv-year').value.trim(),
+  };
+
+  const indexVal = document.getElementById('kv-index').value;
+  if (indexVal === '') {
+    state.kv.push(item);
+  } else {
+    state.kv[parseInt(indexVal)] = item;
+  }
+
+  closeKVModal();
+  renderKV();
+  await persistKV(indexVal === '' ? `KV 추가: ${title}` : `KV 수정: ${title}`);
+}
+
+let pendingDeleteKVIndex = null;
+function confirmDeleteKV(i) {
+  pendingDeleteKVIndex = i;
+  const name = state.kv[i]?.title || '이 항목';
+  document.getElementById('confirm-title').textContent = 'KV 삭제';
+  document.getElementById('confirm-msg').textContent   = `"${name}"를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`;
+  document.getElementById('confirm-ok').onclick = doDeleteKV;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+async function doDeleteKV() {
+  if (pendingDeleteKVIndex === null) return;
+  const name = state.kv[pendingDeleteKVIndex]?.title;
+  state.kv.splice(pendingDeleteKVIndex, 1);
+  closeConfirm();
+  renderKV();
+  await persistKV(`KV 삭제: ${name}`);
+}
+
+function previewKVImage(input) { previewKVImageSrc(input.value); }
+function previewKVImageSrc(src) {
+  const img = document.getElementById('kv-image-preview');
+  if (src) { img.src = src; img.style.display = 'block'; }
+  else { img.style.display = 'none'; }
 }
 
 // ── Contact ────────────────────────────────────

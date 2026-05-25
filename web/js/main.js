@@ -414,7 +414,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const projects = await loadJSON('data/projects.json');
 
   if (document.querySelector('.hero')) {
-    initHeroSlider(projects);
+    const kv = await loadJSON('data/kv.json');
+    initHeroSlider(kv && kv.length ? kv : projects);
     initHomeFeaturedWorks(projects);
   }
 
