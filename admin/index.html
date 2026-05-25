@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YRD 관리자</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #111;
+      --gray-1: #444;
+      --gray-2: #888;
+      --gray-3: #ccc;
+      --gray-4: #f4f4f4;
+      --white: #fff;
+      --accent: #111;
+      --danger: #c0392b;
+      --success: #27ae60;
+      --radius: 6px;
+      --shadow: 0 2px 16px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--gray-4);
+      color: var(--black);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Login ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+    }
+    .login-box {
+      width: 380px;
+      padding: 48px 40px;
+      border: 1px solid var(--gray-3);
+      border-radius: var(--radius);
+    }
+    .login-box h1 {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .login-box p {
+      color: var(--gray-2);
+      font-size: 13px;
+      margin-bottom: 32px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-1);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--gray-3);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--black);
+      background: var(--white);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--black);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-hint {
+      font-size: 11px;
+      color: var(--gray-2);
+      margin-top: 4px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      text-decoration: none;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--black); color: var(--white); }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary { background: var(--white); color: var(--black); border: 1px solid var(--gray-3); }
+    .btn-secondary:hover { background: var(--gray-4); }
+    .btn-danger { background: var(--danger); color: var(--white); }
+    .btn-danger:hover { opacity: 0.85; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-full { width: 100%; justify-content: center; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── App Shell ── */
+    #app { display: none; min-height: 100vh; }
+
+    .app-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-3);
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .app-header-brand {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .app-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+    .status-text {
+      font-size: 12px;
+      color: var(--gray-2);
+    }
+
+    .app-main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--gray-3);
+      margin-bottom: 28px;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--gray-2);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s;
+    }
+    .tab-btn.active {
+      color: var(--black);
+      border-bottom-color: var(--black);
+      font-weight: 500;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section Header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .section-sub {
+      font-size: 13px;
+      color: var(--gray-2);
+      margin-top: 2px;
+    }
+
+    /* ── Project Cards ── */
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .project-card {
+      background: var(--white);
+      border: 1px solid var(--gray-3);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: border-color 0.15s;
+    }
+    .project-card:hover { border-color: var(--black); }
+    .project-thumb {
+      width: 64px;
+      height: 48px;
+      border-radius: 4px;
+      object-fit: cover;
+      background: var(--gray-4);
+      flex-shrink: 0;
+    }
+    .project-thumb-placeholder {
+      width: 64px;
+      height: 48px;
+      border-radius: 4px;
+      background: var(--gray-4);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-3);
+      font-size: 20px;
+    }
+    .project-info { flex: 1; min-width: 0; }
+    .project-name {
+      font-size: 15px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .project-meta-line {
+      font-size: 12px;
+      color: var(--gray-2);
+      margin-top: 2px;
+    }
+    .project-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      background: var(--gray-4);
+      color: var(--gray-1);
+      border: 1px solid var(--gray-3);
+    }
+    .project-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── Order Handle ── */
+    .drag-handle {
+      cursor: grab;
+      color: var(--gray-3);
+      font-size: 18px;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .drag-handle:active { cursor: grabbing; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 200;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px;
+      overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 640px;
+      padding: 32px;
+      position: relative;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .modal-close {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 24px;
+      color: var(--gray-2);
+      line-height: 1;
+      padding: 0 4px;
+    }
+    .modal-close:hover { color: var(--black); }
+
+    /* ── Gallery Editor ── */
+    .gallery-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .gallery-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .gallery-item input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid var(--gray-3);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+    .gallery-item input:focus { border-color: var(--black); }
+    .gallery-preview {
+      width: 40px;
+      height: 30px;
+      border-radius: 3px;
+      object-fit: cover;
+      background: var(--gray-4);
+      flex-shrink: 0;
+    }
+    .gallery-remove {
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--gray-2);
+      font-size: 18px;
+      line-height: 1;
+      padding: 0 2px;
+      flex-shrink: 0;
+    }
+    .gallery-remove:hover { color: var(--danger); }
+
+    /* ── Two-col form layout ── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--black);
+      color: var(--white);
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 999;
+      max-width: 300px;
+    }
+    #toast.show { opacity: 1; }
+    #toast.error { background: var(--danger); }
+    #toast.success { background: var(--success); }
+
+    /* ── Loading ── */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      color: var(--gray-2);
+      font-size: 14px;
+    }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--gray-3);
+      border-top-color: var(--black);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray-2);
+    }
+    .empty-state h3 { font-size: 16px; font-weight: 400; margin-bottom: 8px; }
+
+    /* ── Error ── */
+    .error-msg {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--danger);
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--gray-3);
+      margin: 20px 0;
+    }
+
+    /* ── Specs grid ── */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ── Confirm dialog ── */
+    .confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .confirm-overlay.open { display: flex; }
+    .confirm-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      max-width: 360px;
+      width: 90%;
+      text-align: center;
+    }
+    .confirm-box h3 { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+    .confirm-box p { color: var(--gray-1); font-size: 13px; margin-bottom: 24px; }
+    .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+      .specs-grid { grid-template-columns: 1fr; }
+      .modal { padding: 24px 20px; }
+      .app-header { padding: 0 16px; }
+      .app-main { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ────────────────── LOGIN ────────────────── -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>YRD</h1>
+    <p>콘텐츠 관리자 페이지입니다</p>
+    <div id="login-error" class="error-msg" style="display:none;"></div>
+    <div class="form-group">
+      <label>관리자 비밀번호</label>
+      <input type="password" id="input-password" placeholder="비밀번호 입력" autocomplete="current-password">
+    </div>
+    <div class="form-group">
+      <label>GitHub 액세스 토큰</label>
+      <input type="password" id="input-token" placeholder="ghp_..." autocomplete="off">
+      <p class="form-hint">처음 한 번만 입력하면 세션 동안 유지됩니다</p>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()" style="margin-top:8px;">
+      로그인
+    </button>
+  </div>
+</div>
+
+<!-- ────────────────── APP ────────────────── -->
+<div id="app">
+  <header class="app-header">
+    <span class="app-header-brand">YRD</span>
+    <div class="app-header-right">
+      <div id="save-status" style="display:none; align-items:center; gap:6px;">
+        <div class="spinner" style="width:14px;height:14px;"></div>
+        <span class="status-text">저장 중...</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="openSite()">사이트 보기 ↗</button>
+      <button class="btn btn-secondary btn-sm" onclick="logout()">로그아웃</button>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('projects', this)">프로젝트</button>
+      <button class="tab-btn" onclick="switchTab('contact', this)">연락처 정보</button>
+    </div>
+
+    <!-- ── PROJECTS TAB ── -->
+    <div id="tab-projects" class="tab-panel active">
+      <div class="section-header">
+        <div>
+          <div class="section-title">프로젝트 관리</div>
+          <div class="section-sub">드래그로 순서를 변경할 수 있습니다</div>
+        </div>
+        <button class="btn btn-primary" onclick="openNewProject()">+ 새 프로젝트</button>
+      </div>
+      <div id="projects-loading" class="loading">
+        <div class="spinner"></div> 불러오는 중...
+      </div>
+      <div id="project-list" class="project-list" style="display:none;"></div>
+      <div id="projects-empty" class="empty-state" style="display:none;">
+        <h3>프로젝트가 없습니다</h3>
+        <p>새 프로젝트를 추가해보세요</p>
+      </div>
+    </div>
+
+    <!-- ── CONTACT TAB ── -->
+    <div id="tab-contact" class="tab-panel">
+      <div class="section-header">
+        <div>
+          <div class="section-title">연락처 정보</div>
+          <div class="section-sub">사이트에 표시되는 연락처를 수정합니다</div>
+        </div>
+        <button class="btn btn-primary" onclick="saveContact()">저장</button>
+      </div>
+      <div id="contact-loading" class="loading">
+        <div class="spinner"></div> 불러오는 중...
+      </div>
+      <div id="contact-form" style="display:none; background:var(--white); border:1px solid var(--gray-3); border-radius:var(--radius); padding:24px;">
+        <div class="form-row">
+          <div class="form-group">
+            <label>전화번호</label>
+            <input type="text" id="c-phone" placeholder="02-000-0000">
+          </div>
+          <div class="form-group">
+            <label>이메일</label>
+            <input type="email" id="c-email" placeholder="email@example.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>인스타그램</label>
+            <input type="text" id="c-instagram" placeholder="@handle">
+          </div>
+          <div class="form-group">
+            <label>운영 시간</label>
+            <input type="text" id="c-hours" placeholder="월-금 9:00 - 17:00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>주소</label>
+          <input type="text" id="c-address" placeholder="서울시 강남구...">
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ────────────────── PROJECT MODAL ────────────────── -->
+<div id="project-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">새 프로젝트</span>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+
+    <input type="hidden" id="p-index">
+
+    <div class="form-group">
+      <label>제목 *</label>
+      <input type="text" id="p-title" placeholder="청담 라운지">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>카테고리</label>
+        <select id="p-category">
+          <option value="Commercial">Commercial</option>
+          <option value="Living">Living</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Public">Public</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>연도</label>
+        <input type="text" id="p-year" placeholder="2024">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>위치</label>
+      <input type="text" id="p-location" placeholder="서울 강남구">
+    </div>
+    <div class="form-group">
+      <label>설명</label>
+      <textarea id="p-description" rows="3" placeholder="프로젝트에 대한 설명을 입력하세요..."></textarea>
+    </div>
+
+    <hr class="divider">
+    <div style="font-size:13px; font-weight:500; margin-bottom:12px; color:var(--gray-1);">스펙</div>
+    <div class="specs-grid">
+      <div class="form-group">
+        <label>면적</label>
+        <input type="text" id="p-area" placeholder="280㎡">
+      </div>
+      <div class="form-group">
+        <label>용도</label>
+        <input type="text" id="p-usage" placeholder="F&B 라운지">
+      </div>
+      <div class="form-group">
+        <label>구조</label>
+        <input type="text" id="p-structure" placeholder="철근콘크리트조">
+      </div>
+      <div class="form-group">
+        <label>마감재</label>
+        <input type="text" id="p-materials" placeholder="노출콘크리트, 오크원목">
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--gray-1);">대표 이미지</div>
+    <div style="font-size:11px; color:var(--gray-2); margin-bottom:10px;">메인 슬라이더 및 목록에 사용됩니다</div>
+    <div class="form-group">
+      <label>이미지 URL</label>
+      <input type="url" id="p-image" placeholder="https://..." oninput="previewMainImage(this)">
+    </div>
+    <img id="p-image-preview" style="width:100%;height:160px;object-fit:cover;border-radius:4px;display:none;margin-bottom:16px;" alt="">
+
+    <hr class="divider">
+    <div style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--gray-1);">갤러리 이미지</div>
+    <div style="font-size:11px; color:var(--gray-2); margin-bottom:10px;">프로젝트 상세 페이지에 표시됩니다</div>
+    <div id="gallery-list" class="gallery-list"></div>
+    <button class="btn btn-secondary btn-sm" onclick="addGalleryItem()" style="margin-bottom:20px;">+ 이미지 추가</button>
+
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn btn-secondary" onclick="closeModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveProject()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────── CONFIRM ────────────────── -->
+<div id="confirm-overlay" class="confirm-overlay">
+  <div class="confirm-box">
+    <h3 id="confirm-title">삭제하시겠습니까?</h3>
+    <p id="confirm-msg">이 작업은 되돌릴 수 없습니다.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary" onclick="closeConfirm()">취소</button>
+      <button class="btn btn-danger" id="confirm-ok">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────── TOAST ────────────────── -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG  (개발자가 수정)
+// ═══════════════════════════════════════════════
+const ADMIN_PASSWORD = 'yrdyrd9999';       // 관리자 비밀번호
+const GITHUB_REPO    = 'kyeom-wade/yrd-portfolio';
+const GITHUB_BRANCH  = 'main';
+// ═══════════════════════════════════════════════
+
+let state = {
+  token: sessionStorage.getItem('cms_token') || '',
+  projects: [],
+  projectsSHA: '',
+  contact: {},
+  contactSHA: '',
+};
+
+// ── Auth ──────────────────────────────────────
+function doLogin() {
+  const pw    = document.getElementById('input-password').value;
+  const token = document.getElementById('input-token').value.trim();
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (pw !== ADMIN_PASSWORD) {
+    errEl.textContent = '비밀번호가 올바르지 않습니다.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!token) {
+    errEl.textContent = 'GitHub 액세스 토큰을 입력해주세요.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  state.token = token;
+  sessionStorage.setItem('cms_token', token);
+  showApp();
+}
+
+function logout() {
+  sessionStorage.removeItem('cms_token');
+  state.token = '';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+    doLogin();
+  }
+});
+
+// ── App Init ──────────────────────────────────
+async function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  await Promise.all([loadProjects(), loadContact()]);
+}
+
+function openSite() {
+  window.open(`https://kyeom-wade.github.io/yrd-portfolio/`, '_blank');
+}
+
+// ── GitHub API ────────────────────────────────
+async function ghFetch(path, options = {}) {
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+    ...options,
+    headers: {
+      'Authorization': `token ${state.token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    }
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function readFile(path) {
+  const data = await ghFetch(`${path}?ref=${GITHUB_BRANCH}`);
+  const content = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+  return { content, sha: data.sha };
+}
+
+async function writeFile(path, sha, content, message) {
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
+  return ghFetch(path, {
+    method: 'PUT',
+    body: JSON.stringify({ message, content: encoded, sha, branch: GITHUB_BRANCH }),
+  });
+}
+
+// ── Projects ──────────────────────────────────
+async function loadProjects() {
+  try {
+    const { content, sha } = await readFile('data/projects.json');
+    state.projects = content;
+    state.projectsSHA = sha;
+    renderProjects();
+  } catch (e) {
+    toast('프로젝트 로딩 실패: ' + e.message, 'error');
+    document.getElementById('projects-loading').innerHTML = `<span style="color:var(--danger)">로딩 실패. 토큰을 확인하세요.</span>`;
+  }
+}
+
+function renderProjects() {
+  const loading = document.getElementById('projects-loading');
+  const list    = document.getElementById('project-list');
+  const empty   = document.getElementById('projects-empty');
+
+  loading.style.display = 'none';
+
+  if (!state.projects.length) {
+    list.style.display  = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  list.style.display  = 'flex';
+  empty.style.display = 'none';
+  list.innerHTML = state.projects.map((p, i) => `
+    <div class="project-card" draggable="true" data-index="${i}"
+         ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="dragDrop(event)">
+      <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
+      ${p.thumbnail
+        ? `<img class="project-thumb" src="${escHtml(p.thumbnail)}" alt="" onerror="this.style.display='none'">`
+        : `<div class="project-thumb-placeholder">📷</div>`}
+      <div class="project-info">
+        <div class="project-name">${escHtml(p.title || '(제목 없음)')}</div>
+        <div class="project-meta-line">
+          ${p.location ? escHtml(p.location) + ' · ' : ''}${p.year || ''}
+          <span class="project-badge" style="margin-left:4px;">${escHtml(p.category || '')}</span>
+        </div>
+      </div>
+      <div class="project-actions">
+        <button class="btn btn-secondary btn-sm" onclick="openEditProject(${i})">수정</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteProject(${i})">삭제</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Drag-to-reorder
+let dragSrcIndex = null;
+function dragStart(e) {
+  dragSrcIndex = +e.currentTarget.dataset.index;
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+async function dragDrop(e) {
+  e.preventDefault();
+  const target = +e.currentTarget.dataset.index;
+  if (dragSrcIndex === null || dragSrcIndex === target) return;
+  const items = [...state.projects];
+  const [moved] = items.splice(dragSrcIndex, 1);
+  items.splice(target, 0, moved);
+  state.projects = items;
+  renderProjects();
+  await persistProjects('프로젝트 순서 변경');
+}
+
+async function persistProjects(msg = '프로젝트 업데이트') {
+  setSaveStatus(true);
+  try {
+    const res = await writeFile('data/projects.json', state.projectsSHA, state.projects, `[CMS] ${msg}`);
+    state.projectsSHA = res.content.sha;
+    toast('저장되었습니다 ✓', 'success');
+  } catch (e) {
+    toast('저장 실패: ' + e.message, 'error');
+  } finally {
+    setSaveStatus(false);
+  }
+}
+
+// ── Project Modal ──────────────────────────────
+function openNewProject() {
+  document.getElementById('modal-title').textContent = '새 프로젝트';
+  document.getElementById('p-index').value = '';
+  clearForm();
+  document.getElementById('project-modal').classList.add('open');
+}
+
+function openEditProject(i) {
+  const p = state.projects[i];
+  document.getElementById('modal-title').textContent = '프로젝트 수정';
+  document.getElementById('p-index').value = i;
+  document.getElementById('p-title').value       = p.title       || '';
+  document.getElementById('p-category').value    = p.category    || 'Commercial';
+  document.getElementById('p-year').value        = p.year        || '';
+  document.getElementById('p-location').value    = p.location    || '';
+  document.getElementById('p-description').value = p.description || '';
+  document.getElementById('p-area').value        = p.specs?.area      || '';
+  document.getElementById('p-usage').value       = p.specs?.usage     || '';
+  document.getElementById('p-structure').value   = p.specs?.structure || '';
+  document.getElementById('p-materials').value   = p.specs?.materials || '';
+  document.getElementById('p-image').value       = p.image || '';
+  previewMainImageSrc(p.image);
+  renderGalleryList(p.gallery || []);
+  document.getElementById('project-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('project-modal').classList.remove('open');
+}
+
+function clearForm() {
+  ['p-title','p-year','p-location','p-description','p-area','p-usage','p-structure','p-materials','p-image']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('p-category').value = 'Commercial';
+  document.getElementById('p-image-preview').style.display = 'none';
+  renderGalleryList([]);
+}
+
+function buildProjectFromForm() {
+  const title    = document.getElementById('p-title').value.trim();
+  const category = document.getElementById('p-category').value;
+  const year     = document.getElementById('p-year').value.trim();
+  const location = document.getElementById('p-location').value.trim();
+  const desc     = document.getElementById('p-description').value.trim();
+  const area     = document.getElementById('p-area').value.trim();
+  const usage    = document.getElementById('p-usage').value.trim();
+  const structure = document.getElementById('p-structure').value.trim();
+  const materials = document.getElementById('p-materials').value.trim();
+  const image    = document.getElementById('p-image').value.trim();
+  const gallery  = getGalleryUrls();
+  const id       = title ? title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9가-힣-]/g, '') + '-' + Date.now() % 10000 : 'project-' + Date.now();
+  const thumbnail = image ? image.replace(/w=1920/, 'w=800') : '';
+
+  return { id, title, location, year, category, image, thumbnail, description: desc,
+    specs: { area, usage, structure, materials }, gallery };
+}
+
+async function saveProject() {
+  const title = document.getElementById('p-title').value.trim();
+  if (!title) { toast('제목을 입력해주세요', 'error'); return; }
+
+  const indexVal = document.getElementById('p-index').value;
+  const project  = buildProjectFromForm();
+
+  if (indexVal === '') {
+    state.projects.unshift(project);
+  } else {
+    const i = parseInt(indexVal);
+    project.id = state.projects[i].id;
+    state.projects[i] = project;
+  }
+
+  closeModal();
+  renderProjects();
+  await persistProjects(indexVal === '' ? `새 프로젝트 추가: ${title}` : `프로젝트 수정: ${title}`);
+}
+
+// ── Gallery ────────────────────────────────────
+function renderGalleryList(urls) {
+  const el = document.getElementById('gallery-list');
+  el.innerHTML = '';
+  urls.forEach((url, i) => addGalleryItem(url));
+}
+
+function addGalleryItem(url = '') {
+  const el   = document.getElementById('gallery-list');
+  const div  = document.createElement('div');
+  div.className = 'gallery-item';
+  div.innerHTML = `
+    <img class="gallery-preview" src="${escHtml(url)}" alt="" onerror="this.src=''">
+    <input type="url" value="${escHtml(url)}" placeholder="https://..." oninput="updateGalleryPreview(this)">
+    <button class="gallery-remove" onclick="this.closest('.gallery-item').remove()" title="삭제">&times;</button>
+  `;
+  el.appendChild(div);
+}
+
+function updateGalleryPreview(input) {
+  input.previousElementSibling.src = input.value;
+}
+
+function getGalleryUrls() {
+  return [...document.querySelectorAll('#gallery-list input')].map(i => i.value.trim()).filter(Boolean);
+}
+
+function previewMainImage(input) {
+  previewMainImageSrc(input.value);
+}
+function previewMainImageSrc(src) {
+  const img = document.getElementById('p-image-preview');
+  if (src) { img.src = src; img.style.display = 'block'; }
+  else { img.style.display = 'none'; }
+}
+
+// ── Delete Confirm ─────────────────────────────
+let pendingDeleteIndex = null;
+function confirmDeleteProject(i) {
+  pendingDeleteIndex = i;
+  const name = state.projects[i]?.title || '이 프로젝트';
+  document.getElementById('confirm-title').textContent = '프로젝트 삭제';
+  document.getElementById('confirm-msg').textContent   = `"${name}"를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`;
+  document.getElementById('confirm-ok').onclick = doDeleteProject;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  pendingDeleteIndex = null;
+}
+async function doDeleteProject() {
+  if (pendingDeleteIndex === null) return;
+  const name = state.projects[pendingDeleteIndex]?.title;
+  state.projects.splice(pendingDeleteIndex, 1);
+  closeConfirm();
+  renderProjects();
+  await persistProjects(`프로젝트 삭제: ${name}`);
+}
+
+// ── Contact ────────────────────────────────────
+async function loadContact() {
+  try {
+    const { content, sha } = await readFile('data/contact.json');
+    state.contact    = content;
+    state.contactSHA = sha;
+    document.getElementById('c-phone').value     = content.phone     || '';
+    document.getElementById('c-email').value     = content.email     || '';
+    document.getElementById('c-instagram').value = content.instagram || '';
+    document.getElementById('c-hours').value     = content.hours     || '';
+    document.getElementById('c-address').value   = content.address   || '';
+    document.getElementById('contact-loading').style.display = 'none';
+    document.getElementById('contact-form').style.display    = 'block';
+  } catch (e) {
+    toast('연락처 로딩 실패: ' + e.message, 'error');
+  }
+}
+
+async function saveContact() {
+  const contact = {
+    phone:     document.getElementById('c-phone').value.trim(),
+    email:     document.getElementById('c-email').value.trim(),
+    instagram: document.getElementById('c-instagram').value.trim(),
+    address:   document.getElementById('c-address').value.trim(),
+    hours:     document.getElementById('c-hours').value.trim(),
+  };
+  setSaveStatus(true);
+  try {
+    const res = await writeFile('data/contact.json', state.contactSHA, contact, '[CMS] 연락처 업데이트');
+    state.contactSHA = res.content.sha;
+    state.contact    = contact;
+    toast('저장되었습니다 ✓', 'success');
+  } catch (e) {
+    toast('저장 실패: ' + e.message, 'error');
+  } finally {
+    setSaveStatus(false);
+  }
+}
+
+// ── Tabs ────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
+// ── Toast ───────────────────────────────────────
+let toastTimer;
+function toast(msg, type = 'default') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.className = '', 3000);
+}
+
+// ── Save Status ─────────────────────────────────
+function setSaveStatus(on) {
+  document.getElementById('save-status').style.display = on ? 'flex' : 'none';
+}
+
+// ── Escape HTML ─────────────────────────────────
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Auto login if token in session ──────────────
+if (state.token) {
+  showApp().catch(() => {});
+}
+</script>
+</body>
+</html>
