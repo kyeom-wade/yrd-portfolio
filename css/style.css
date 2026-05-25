@@ -102,15 +102,9 @@ body.loaded {
   top: 0;
   left: 0;
   right: 0;
-  height: 80px;
+  height: 64px;
   background: transparent;
   z-index: 1000;
-  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.top-header.scrolled {
-  height: 60px;
-  background: transparent;
 }
 
 .header-content {
@@ -124,16 +118,11 @@ body.loaded {
 
 .header-brand {
   font-family: var(--font-sans);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--color-text);
-  transition: all var(--transition-medium);
-}
-
-.top-header.scrolled .header-brand {
-  font-size: 1rem;
 }
 
 .header-nav {
@@ -146,28 +135,24 @@ body.loaded {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--color-text);
-  transition: color var(--transition-fast);
+  transition: opacity var(--transition-fast);
 }
 
 .header-nav a:hover,
 .header-nav a.active {
-  color: var(--color-text);
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
-/* --- Light Header (for dark backgrounds like hero) --- */
-.header-light .header-brand {
-  color: #ffffff;
-}
-
+/* --- Home: transparent + white text --- */
+.header-light .header-brand,
 .header-light .header-nav a {
   color: #ffffff;
 }
 
-.header-light .header-nav a:hover,
-.header-light .header-nav a.active {
-  color: #ffffff;
-  opacity: 0.7;
+/* --- Other pages: white BG + dark text --- */
+.header-white {
+  background: #ffffff;
+  border-bottom: 1px solid #ebebeb;
 }
 
 /* --- Bottom Navigation --- */

@@ -15,29 +15,6 @@ async function loadJSON(path) {
   }
 }
 
-// --- Scroll Responsive Header ---
-function initScrollHeader() {
-  const header = document.querySelector('.top-header');
-  if (!header) return;
-
-  let lastScrollTop = 0;
-  const scrollThreshold = 20;
-
-  function handleScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (scrollTop > scrollThreshold) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
-
-    lastScrollTop = scrollTop;
-  }
-
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  handleScroll(); // Initial check
-}
 
 // --- Viewport Height Detection ---
 function setFillHeight() {
@@ -437,7 +414,6 @@ function initHomeFeaturedWorks(projects) {
 
 // --- Init ---
 document.addEventListener('DOMContentLoaded', async () => {
-  initScrollHeader();
   initViewportHeight();
   initPageTransition();
 
