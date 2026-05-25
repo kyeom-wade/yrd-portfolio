@@ -680,25 +680,50 @@
     </div>
 
     <hr class="divider">
-    <div style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--gray-1);">대표 이미지</div>
-    <div style="font-size:11px; color:var(--gray-2); margin-bottom:10px;">메인 슬라이더 및 목록에 사용됩니다</div>
-    <div class="drop-zone" id="main-drop-zone"
-         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
-         ondrop="handleDrop(event, 'main')">
-      <input type="file" accept="image/*" onchange="handleFileSelect(event, 'main')">
-      <div class="drop-zone-icon">🖼️</div>
-      <div class="drop-zone-text"><strong>클릭하거나 드래그</strong>하여 이미지 업로드</div>
-      <div class="drop-zone-hint">JPG, PNG, WEBP · 최대 10MB · 자동 압축됨</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:4px;">
+
+      <div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:4px;color:var(--gray-1);">대표 이미지</div>
+        <div style="font-size:11px;color:var(--gray-2);margin-bottom:10px;">슬라이더 헤더 · 권장 1920×1080 (16:9)</div>
+        <div class="drop-zone" id="main-drop-zone"
+             ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event, 'main')">
+          <input type="file" accept="image/*" onchange="handleFileSelect(event, 'main')">
+          <div class="drop-zone-icon">🖼️</div>
+          <div class="drop-zone-text"><strong>클릭하거나 드래그</strong></div>
+          <div class="drop-zone-hint">자동 압축됨</div>
+        </div>
+        <div class="upload-progress" id="main-upload-progress">
+          <div class="spinner" style="width:14px;height:14px;"></div>
+          <span id="main-upload-text">업로드 중...</span>
+        </div>
+        <input type="url" id="p-image" placeholder="또는 URL 직접 입력" oninput="previewMainImage(this)"
+               style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--gray-3);border-radius:var(--radius);font-family:inherit;font-size:12px;outline:none;">
+        <img id="p-image-preview" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:4px;display:none;margin-top:8px;" alt="">
+      </div>
+
+      <div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:4px;color:var(--gray-1);">썸네일 이미지</div>
+        <div style="font-size:11px;color:var(--gray-2);margin-bottom:10px;">Works 목록 카드 · 권장 800×1060 (3:4)</div>
+        <div class="drop-zone" id="thumb-drop-zone"
+             ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event, 'thumb')">
+          <input type="file" accept="image/*" onchange="handleFileSelect(event, 'thumb')">
+          <div class="drop-zone-icon">🗂️</div>
+          <div class="drop-zone-text"><strong>클릭하거나 드래그</strong></div>
+          <div class="drop-zone-hint">자동 압축됨</div>
+        </div>
+        <div class="upload-progress" id="thumb-upload-progress">
+          <div class="spinner" style="width:14px;height:14px;"></div>
+          <span id="thumb-upload-text">업로드 중...</span>
+        </div>
+        <input type="url" id="p-thumbnail" placeholder="또는 URL 직접 입력" oninput="previewThumb(this)"
+               style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--gray-3);border-radius:var(--radius);font-family:inherit;font-size:12px;outline:none;">
+        <img id="p-thumb-preview" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:4px;display:none;margin-top:8px;" alt="">
+      </div>
+
     </div>
-    <div class="upload-progress" id="main-upload-progress">
-      <div class="spinner" style="width:14px;height:14px;"></div>
-      <span id="main-upload-text">업로드 중...</span>
-    </div>
-    <div class="form-group" style="margin-top:8px;">
-      <label>또는 URL 직접 입력</label>
-      <input type="url" id="p-image" placeholder="https://..." oninput="previewMainImage(this)">
-    </div>
-    <img id="p-image-preview" style="width:100%;height:160px;object-fit:cover;border-radius:4px;display:none;margin-bottom:16px;" alt="">
 
     <hr class="divider">
     <div style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--gray-1);">갤러리 이미지</div>
@@ -942,8 +967,10 @@ function openEditProject(i) {
   document.getElementById('p-usage').value       = p.specs?.usage     || '';
   document.getElementById('p-structure').value   = p.specs?.structure || '';
   document.getElementById('p-materials').value   = p.specs?.materials || '';
-  document.getElementById('p-image').value       = p.image || '';
+  document.getElementById('p-image').value       = p.image     || '';
+  document.getElementById('p-thumbnail').value   = p.thumbnail || '';
   previewMainImageSrc(p.image);
+  previewThumbSrc(p.thumbnail);
   renderGalleryList(p.gallery || []);
   document.getElementById('project-modal').classList.add('open');
 }
@@ -953,10 +980,11 @@ function closeModal() {
 }
 
 function clearForm() {
-  ['p-title','p-year','p-location','p-description','p-area','p-usage','p-structure','p-materials','p-image']
+  ['p-title','p-year','p-location','p-description','p-area','p-usage','p-structure','p-materials','p-image','p-thumbnail']
     .forEach(id => document.getElementById(id).value = '');
   document.getElementById('p-category').value = 'Commercial';
   document.getElementById('p-image-preview').style.display = 'none';
+  document.getElementById('p-thumb-preview').style.display = 'none';
   renderGalleryList([]);
 }
 
@@ -970,10 +998,10 @@ function buildProjectFromForm() {
   const usage    = document.getElementById('p-usage').value.trim();
   const structure = document.getElementById('p-structure').value.trim();
   const materials = document.getElementById('p-materials').value.trim();
-  const image    = document.getElementById('p-image').value.trim();
-  const gallery  = getGalleryUrls();
-  const id       = title ? title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9가-힣-]/g, '') + '-' + Date.now() % 10000 : 'project-' + Date.now();
-  const thumbnail = image ? image.replace(/w=1920/, 'w=800') : '';
+  const image     = document.getElementById('p-image').value.trim();
+  const thumbnail = document.getElementById('p-thumbnail').value.trim() || (image ? image.replace(/w=1920/, 'w=800') : '');
+  const gallery   = getGalleryUrls();
+  const id        = title ? title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9가-힣-]/g, '') + '-' + Date.now() % 10000 : 'project-' + Date.now();
 
   return { id, title, location, year, category, image, thumbnail, description: desc,
     specs: { area, usage, structure, materials }, gallery };
@@ -1031,6 +1059,9 @@ async function processImageFiles(files, target) {
       if (target === 'main') {
         document.getElementById('p-image').value = url;
         previewMainImageSrc(url);
+      } else if (target === 'thumb') {
+        document.getElementById('p-thumbnail').value = url;
+        previewThumbSrc(url);
       } else {
         addGalleryItem(url);
       }
@@ -1113,11 +1144,15 @@ function getGalleryUrls() {
   return [...document.querySelectorAll('#gallery-list input')].map(i => i.value.trim()).filter(Boolean);
 }
 
-function previewMainImage(input) {
-  previewMainImageSrc(input.value);
-}
+function previewMainImage(input) { previewMainImageSrc(input.value); }
 function previewMainImageSrc(src) {
   const img = document.getElementById('p-image-preview');
+  if (src) { img.src = src; img.style.display = 'block'; }
+  else { img.style.display = 'none'; }
+}
+function previewThumb(input) { previewThumbSrc(input.value); }
+function previewThumbSrc(src) {
+  const img = document.getElementById('p-thumb-preview');
   if (src) { img.src = src; img.style.display = 'block'; }
   else { img.style.display = 'none'; }
 }
