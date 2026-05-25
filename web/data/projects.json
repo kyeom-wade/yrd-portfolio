@@ -40,7 +40,7 @@
   },
   {
     "id": "cheongdam-lounge",
-    "title": "청담 라운지",
+    "title": "삼성동 품 서울",
     "location": "서울 강남구",
     "year": "2024",
     "category": "Commercial",
@@ -54,9 +54,18 @@
       "materials": "노출콘크리트, 오크원목, 스틸"
     },
     "gallery": [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80",
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1920&q=80",
-      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1920&q=80"
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
+      },
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1920&q=80"
+      },
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1920&q=80"
+      }
     ]
   },
   {
