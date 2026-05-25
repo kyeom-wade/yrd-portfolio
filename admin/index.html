@@ -367,6 +367,43 @@
     }
     .gallery-remove:hover { color: var(--danger); }
 
+    /* ── Drop Zone ── */
+    .drop-zone {
+      border: 2px dashed var(--gray-3);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--black);
+      background: var(--gray-4);
+    }
+    .drop-zone input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .drop-zone-icon { font-size: 28px; margin-bottom: 8px; }
+    .drop-zone-text { font-size: 13px; color: var(--gray-2); }
+    .drop-zone-text strong { color: var(--black); }
+    .drop-zone-hint { font-size: 11px; color: var(--gray-3); margin-top: 4px; }
+    .upload-progress {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--gray-2);
+      margin-top: 8px;
+    }
+    .upload-progress.show { display: flex; }
+
     /* ── Two-col form layout ── */
     .form-row {
       display: grid;
@@ -645,8 +682,20 @@
     <hr class="divider">
     <div style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--gray-1);">대표 이미지</div>
     <div style="font-size:11px; color:var(--gray-2); margin-bottom:10px;">메인 슬라이더 및 목록에 사용됩니다</div>
-    <div class="form-group">
-      <label>이미지 URL</label>
+    <div class="drop-zone" id="main-drop-zone"
+         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+         ondrop="handleDrop(event, 'main')">
+      <input type="file" accept="image/*" onchange="handleFileSelect(event, 'main')">
+      <div class="drop-zone-icon">🖼️</div>
+      <div class="drop-zone-text"><strong>클릭하거나 드래그</strong>하여 이미지 업로드</div>
+      <div class="drop-zone-hint">JPG, PNG, WEBP · 최대 10MB · 자동 압축됨</div>
+    </div>
+    <div class="upload-progress" id="main-upload-progress">
+      <div class="spinner" style="width:14px;height:14px;"></div>
+      <span id="main-upload-text">업로드 중...</span>
+    </div>
+    <div class="form-group" style="margin-top:8px;">
+      <label>또는 URL 직접 입력</label>
       <input type="url" id="p-image" placeholder="https://..." oninput="previewMainImage(this)">
     </div>
     <img id="p-image-preview" style="width:100%;height:160px;object-fit:cover;border-radius:4px;display:none;margin-bottom:16px;" alt="">
@@ -654,8 +703,20 @@
     <hr class="divider">
     <div style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--gray-1);">갤러리 이미지</div>
     <div style="font-size:11px; color:var(--gray-2); margin-bottom:10px;">프로젝트 상세 페이지에 표시됩니다</div>
-    <div id="gallery-list" class="gallery-list"></div>
-    <button class="btn btn-secondary btn-sm" onclick="addGalleryItem()" style="margin-bottom:20px;">+ 이미지 추가</button>
+    <div class="drop-zone" id="gallery-drop-zone"
+         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+         ondrop="handleDrop(event, 'gallery')">
+      <input type="file" accept="image/*" multiple onchange="handleFileSelect(event, 'gallery')">
+      <div class="drop-zone-icon">📁</div>
+      <div class="drop-zone-text"><strong>클릭하거나 드래그</strong>하여 여러 장 업로드</div>
+      <div class="drop-zone-hint">여러 파일 동시 선택 가능</div>
+    </div>
+    <div class="upload-progress" id="gallery-upload-progress">
+      <div class="spinner" style="width:14px;height:14px;"></div>
+      <span id="gallery-upload-text">업로드 중...</span>
+    </div>
+    <div id="gallery-list" class="gallery-list" style="margin-top:10px;"></div>
+    <button class="btn btn-secondary btn-sm" onclick="addGalleryItem()" style="margin-bottom:20px;">+ URL로 추가</button>
 
     <div style="display:flex; gap:10px; justify-content:flex-end;">
       <button class="btn btn-secondary" onclick="closeModal()">취소</button>
@@ -938,16 +999,103 @@ async function saveProject() {
   await persistProjects(indexVal === '' ? `새 프로젝트 추가: ${title}` : `프로젝트 수정: ${title}`);
 }
 
+// ── Image Upload ───────────────────────────────
+function handleDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('dragover');
+}
+function handleDragLeave(e) {
+  e.currentTarget.classList.remove('dragover');
+}
+function handleDrop(e, target) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+  if (files.length) processImageFiles(files, target);
+}
+function handleFileSelect(e, target) {
+  const files = [...e.target.files];
+  if (files.length) processImageFiles(files, target);
+  e.target.value = '';
+}
+
+async function processImageFiles(files, target) {
+  const progressEl = document.getElementById(`${target}-upload-progress`);
+  const textEl     = document.getElementById(`${target}-upload-text`);
+  progressEl.classList.add('show');
+
+  for (let i = 0; i < files.length; i++) {
+    textEl.textContent = `업로드 중... (${i + 1}/${files.length})`;
+    try {
+      const url = await uploadImageToGitHub(files[i]);
+      if (target === 'main') {
+        document.getElementById('p-image').value = url;
+        previewMainImageSrc(url);
+      } else {
+        addGalleryItem(url);
+      }
+    } catch (e) {
+      toast('업로드 실패: ' + e.message, 'error');
+    }
+  }
+
+  progressEl.classList.remove('show');
+}
+
+async function uploadImageToGitHub(file) {
+  const compressed = await compressImage(file, 1920, 0.85);
+  const base64     = compressed.split(',')[1];
+  const ext        = file.name.split('.').pop().toLowerCase().replace('jpg', 'jpeg') || 'jpeg';
+  const filename   = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const path       = `images/uploads/${filename}`;
+
+  const existing = await ghFetch(`${path}?ref=${GITHUB_BRANCH}`).catch(() => null);
+  const body = {
+    message: `[CMS] 이미지 업로드: ${filename}`,
+    content: base64,
+    branch: GITHUB_BRANCH,
+  };
+  if (existing?.sha) body.sha = existing.sha;
+
+  await ghFetch(path, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+
+  return `https://kyeom-wade.github.io/yrd-portfolio/${path}`;
+}
+
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const scale  = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 // ── Gallery ────────────────────────────────────
 function renderGalleryList(urls) {
   const el = document.getElementById('gallery-list');
   el.innerHTML = '';
-  urls.forEach((url, i) => addGalleryItem(url));
+  urls.forEach(url => addGalleryItem(url));
 }
 
 function addGalleryItem(url = '') {
-  const el   = document.getElementById('gallery-list');
-  const div  = document.createElement('div');
+  const el  = document.getElementById('gallery-list');
+  const div = document.createElement('div');
   div.className = 'gallery-item';
   div.innerHTML = `
     <img class="gallery-preview" src="${escHtml(url)}" alt="" onerror="this.src=''">
