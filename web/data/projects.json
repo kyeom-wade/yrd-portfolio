@@ -106,27 +106,6 @@
     ]
   },
   {
-    "id": "seongsu-gallery",
-    "title": "성수 갤러리",
-    "location": "서울 성동구",
-    "year": "2022",
-    "category": "Furniture",
-    "image": "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=1920&q=80",
-    "thumbnail": "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800&q=80",
-    "description": "공장 지대의 산업적 유산을 보존하면서 예술을 위한 백색 큐브를 삽입한 갤러리. 과거와 현재가 공존하는 공간적 경험을 제공한다.",
-    "specs": {
-      "area": "480㎡",
-      "usage": "전시시설",
-      "structure": "철골조",
-      "materials": "노출철골, 백색벽돌, 유리"
-    },
-    "gallery": [
-      "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=1920&q=80",
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1920&q=80",
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1920&q=80"
-    ]
-  },
-  {
     "id": "yangyang-cafe",
     "title": "양양 카페",
     "location": "강원 양양군",
