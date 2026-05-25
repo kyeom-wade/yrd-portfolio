@@ -904,7 +904,7 @@ button {
 .gallery-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--spacing-md);
+  gap: 0;
 }
 
 .gallery-image {
