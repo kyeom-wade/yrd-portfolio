@@ -357,7 +357,7 @@ async function writeFile(path, sha, content, message) {
 // ── Projects ──────────────────────────────────
 async function loadProjects() {
   try {
-    const { content, sha } = await readFile('data/projects.json');
+    const { content, sha } = await readFile('web/data/projects.json');
     state.projects = content;
     state.projectsSHA = sha;
     renderProjects();
@@ -429,7 +429,7 @@ async function dragDrop(e) {
 async function persistProjects(msg = '프로젝트 업데이트') {
   setSaveStatus(true);
   try {
-    const res = await writeFile('data/projects.json', state.projectsSHA, state.projects, `[CMS] ${msg}`);
+    const res = await writeFile('web/data/projects.json', state.projectsSHA, state.projects, `[CMS] ${msg}`);
     state.projectsSHA = res.content.sha;
     toast('저장되었습니다 ✓', 'success');
   } catch (e) {
@@ -574,7 +574,7 @@ async function uploadImageToGitHub(file) {
   const base64     = compressed.split(',')[1];
   const ext        = file.name.split('.').pop().toLowerCase().replace('jpg', 'jpeg') || 'jpeg';
   const filename   = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
-  const path       = `images/uploads/${filename}`;
+  const path       = `web/images/uploads/${filename}`;
 
   const existing = await ghFetch(`${path}?ref=${GITHUB_BRANCH}`).catch(() => null);
   const body = {
@@ -679,7 +679,7 @@ async function doDeleteProject() {
 // ── Contact ────────────────────────────────────
 async function loadContact() {
   try {
-    const { content, sha } = await readFile('data/contact.json');
+    const { content, sha } = await readFile('web/data/contact.json');
     state.contact    = content;
     state.contactSHA = sha;
     document.getElementById('c-phone').value     = content.phone     || '';
@@ -704,7 +704,7 @@ async function saveContact() {
   };
   setSaveStatus(true);
   try {
-    const res = await writeFile('data/contact.json', state.contactSHA, contact, '[CMS] 연락처 업데이트');
+    const res = await writeFile('web/data/contact.json', state.contactSHA, contact, '[CMS] 연락처 업데이트');
     state.contactSHA = res.content.sha;
     state.contact    = contact;
     toast('저장되었습니다 ✓', 'success');
