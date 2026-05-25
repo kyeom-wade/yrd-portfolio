@@ -102,7 +102,7 @@ body.loaded {
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 56px;
   background: transparent;
   z-index: 1000;
 }
