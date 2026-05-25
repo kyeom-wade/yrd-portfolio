@@ -617,6 +617,34 @@ body.loaded {
   color: var(--color-text-muted);
 }
 
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.filter-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+}
+
+.filter-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--color-text-dim);
+  opacity: 0.4;
+}
+
 .filter-buttons {
   display: flex;
   gap: var(--spacing-lg);
@@ -631,11 +659,12 @@ body.loaded {
   color: var(--color-text-muted);
   background: transparent;
   border: none;
-  transition: all var(--transition-fast);
+  cursor: pointer;
+  transition: color var(--transition-fast);
 }
 
 .filter-btn:hover {
-  opacity: 0.9;
+  color: var(--color-text);
 }
 
 .filter-btn.active {
@@ -1091,18 +1120,24 @@ body.loaded {
 
   .works-header h1 {
     font-size: 1.75rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
   }
 
-  .filter-buttons {
-    margin-top: var(--spacing-md);
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .filter-divider {
+    display: none;
+  }
+
+  .filter-group {
+    gap: var(--spacing-md);
   }
 
   .filter-btn {
     font-size: 0.6875rem;
-    padding: 6px 12px;
   }
 
   .works-grid {

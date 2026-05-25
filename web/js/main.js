@@ -126,6 +126,7 @@ function initWorksGrid(projects) {
     const card = document.createElement('div');
     card.className = 'work-card';
     card.dataset.category = project.category;
+    card.dataset.year = project.year;
     card.innerHTML = `
       <img class="card-image" src="${project.thumbnail || project.image}" alt="${project.title}" loading="lazy">
       <div class="card-overlay">
@@ -133,43 +134,62 @@ function initWorksGrid(projects) {
         <p class="card-meta">${project.location} · ${project.year}</p>
       </div>
     `;
-
-    // Add click handler to navigate to detail page
     card.addEventListener('click', () => {
       window.location.href = `project-detail.html?id=${project.id}`;
     });
-
     grid.appendChild(card);
   });
 
-  // Initialize filter buttons
-  initFilterButtons();
+  initFilterButtons(projects);
 }
 
 // --- Filter Buttons ---
-function initFilterButtons() {
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  const workCards = document.querySelectorAll('.work-card');
+function initFilterButtons(projects) {
+  const catContainer  = document.getElementById('filter-category');
+  const yearContainer = document.getElementById('filter-year');
+  if (!catContainer || !yearContainer) return;
 
-  filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const category = button.dataset.category;
+  const categories = ['all', ...new Set(projects.map(p => p.category).filter(Boolean))];
+  const years      = ['all', ...[...new Set(projects.map(p => p.year).filter(Boolean))].sort((a, b) => b - a)];
 
-      // Update active button
-      filterButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
+  const makeBtn = (value, type) => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (value === 'all' ? ' active' : '');
+    btn.textContent = value === 'all' ? 'All' : value;
+    btn.dataset[type] = value;
+    return btn;
+  };
 
-      // Filter cards
-      workCards.forEach(card => {
-        const cardCategory = card.dataset.category;
+  categories.forEach(c => catContainer.appendChild(makeBtn(c, 'category')));
+  years.forEach(y => yearContainer.appendChild(makeBtn(y, 'year')));
 
-        if (category === 'all' || cardCategory === category) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
+  let activeCategory = 'all';
+  let activeYear     = 'all';
+
+  function applyFilters() {
+    document.querySelectorAll('.work-card').forEach(card => {
+      const matchCat  = activeCategory === 'all' || card.dataset.category === activeCategory;
+      const matchYear = activeYear     === 'all' || card.dataset.year     === activeYear;
+      card.classList.toggle('hidden', !(matchCat && matchYear));
     });
+  }
+
+  catContainer.addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    catContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCategory = btn.dataset.category;
+    applyFilters();
+  });
+
+  yearContainer.addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    yearContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeYear = btn.dataset.year;
+    applyFilters();
   });
 }
 
