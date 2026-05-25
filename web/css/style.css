@@ -706,8 +706,7 @@ button {
 
 .work-card .card-image {
   width: 100%;
-  height: auto;
-  max-height: 133cqw;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   display: block;
 }
