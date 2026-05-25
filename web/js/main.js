@@ -2,6 +2,28 @@
    YRD Portfolio - Main Script
    ============================================ */
 
+// --- Menu Overlay ---
+(function () {
+  const menuBtn = document.getElementById('menuBtn');
+  const menuClose = document.getElementById('menuClose');
+  const menuOverlay = document.getElementById('menuOverlay');
+  if (!menuBtn || !menuOverlay) return;
+
+  menuBtn.addEventListener('click', () => {
+    menuOverlay.classList.add('is-open');
+  });
+
+  menuClose.addEventListener('click', () => {
+    menuOverlay.classList.remove('is-open');
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menuOverlay.classList.contains('is-open')) {
+      menuOverlay.classList.remove('is-open');
+    }
+  });
+})();
+
 // --- Data Loader ---
 async function loadJSON(path) {
   try {
@@ -73,7 +95,7 @@ function initHeroSlider(projects) {
       titleEl.appendChild(line2);
     }
     metaEl.innerHTML = `<span>${project.location}</span><span>${project.year}</span>`;
-    counterText.textContent = `${index + 1} / ${projects.length}`;
+    if (counterText) counterText.textContent = `${index + 1} / ${projects.length}`;
 
     titleEl.style.animation = 'fadeInUp 0.8s 0.3s forwards';
     metaEl.style.animation = 'fadeInUp 0.8s 0.5s forwards';
@@ -81,15 +103,8 @@ function initHeroSlider(projects) {
 
   function goToSlide(index) {
     slides[currentIndex].classList.remove('active');
-    slides[currentIndex].style.animation = 'none';
-
     currentIndex = (index + projects.length) % projects.length;
-
-    slides[currentIndex].classList.remove('active');
-    slides[currentIndex].style.animation = 'none';
-    slides[currentIndex].offsetHeight;
     slides[currentIndex].classList.add('active');
-
     updateInfo(currentIndex);
     resetAutoplay();
   }
@@ -101,26 +116,6 @@ function initHeroSlider(projects) {
     clearInterval(autoplayTimer);
     autoplayTimer = setInterval(nextSlide, autoplayInterval);
   }
-
-  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') prevSlide();
-    if (e.key === 'ArrowRight') nextSlide();
-  });
-
-  let touchStartX = 0;
-  hero.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-  }, { passive: true });
-
-  hero.addEventListener('touchend', (e) => {
-    const diff = touchStartX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 60) {
-      diff > 0 ? nextSlide() : prevSlide();
-    }
-  }, { passive: true });
 
   updateInfo(0);
   resetAutoplay();
@@ -249,16 +244,21 @@ function initProjectDetail(projects) {
   if (descriptionEl) descriptionEl.textContent = project.description;
 
   // Populate specs
+  const clientEl = detailPage.querySelector('.spec-client');
+  const specYearEl = detailPage.querySelector('.spec-year');
+  if (clientEl) clientEl.textContent = project.specs?.client || '';
+  if (specYearEl) specYearEl.textContent = project.year || '';
+
   if (project.specs) {
     const areaEl = detailPage.querySelector('.spec-area');
     const usageEl = detailPage.querySelector('.spec-usage');
     const structureEl = detailPage.querySelector('.spec-structure');
     const materialsEl = detailPage.querySelector('.spec-materials');
 
-    if (areaEl) areaEl.textContent = project.specs.area;
-    if (usageEl) usageEl.textContent = project.specs.usage;
-    if (structureEl) structureEl.textContent = project.specs.structure;
-    if (materialsEl) materialsEl.textContent = project.specs.materials;
+    if (areaEl) areaEl.textContent = project.specs.area || '';
+    if (usageEl) usageEl.textContent = project.specs.usage || '';
+    if (structureEl) structureEl.textContent = project.specs.structure || '';
+    if (materialsEl) materialsEl.textContent = project.specs.materials || '';
   }
 
   // Populate gallery
@@ -457,5 +457,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 if (document.querySelector('.contact-page')) {
     const data = await loadJSON('data/contact.json');
     initContact(data);
+  }
+
+  if (document.querySelector('.about-page')) {
+    const data = await loadJSON('data/about.json');
+    if (data) {
+      const img = document.querySelector('.about-hero-image');
+      const para = document.querySelector('.about-paragraph');
+      if (img && data.image) img.src = data.image;
+      if (para && data.body) para.textContent = data.body;
+    }
   }
 });

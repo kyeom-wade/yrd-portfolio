@@ -1,33 +1,37 @@
 [
   {
     "image": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1920&q=80",
-    "title": "제주 밤을 품은",
-    "title2": "가장 따뜻한 미소",
-    "location": "제주 서귀포시",
+    "title": "Where silence",
+    "title2": "becomes space",
+    "location": "Jeju, Seogwipo",
     "year": "2026"
   },
   {
     "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80",
-    "title": "청담 라운지",
-    "location": "서울 강남구",
+    "title": "Light as",
+    "title2": "material",
+    "location": "Seoul, Gangnam",
     "year": "2024"
   },
   {
     "image": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1920&q=80",
-    "title": "을지로 오피스",
-    "location": "서울 중구",
+    "title": "Time left",
+    "title2": "on the wall",
+    "location": "Seoul, Jung-gu",
     "year": "2023"
   },
   {
     "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80",
-    "title": "해운대 리조트",
-    "location": "부산 해운대구",
+    "title": "The horizon",
+    "title2": "comes inside",
+    "location": "Busan, Haeundae",
     "year": "2023"
   },
   {
     "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
-    "title": "한남동 주거 공간",
-    "location": "서울 용산구",
+    "title": "Nature held",
+    "title2": "within the city",
+    "location": "Seoul, Yongsan",
     "year": "2024"
   },
   {
