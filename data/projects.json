@@ -1,26 +1,5 @@
 [
   {
-    "id": "cheongdam-lounge",
-    "title": "청담 라운지",
-    "location": "서울 강남구",
-    "year": "2024",
-    "category": "Commercial",
-    "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80",
-    "thumbnail": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
-    "description": "빛과 그림자의 대비를 통해 공간의 깊이를 만들어낸 라운지 공간. 자연광의 흐름을 고려한 개구부 설계로 시간에 따라 변화하는 분위기를 연출했다.",
-    "specs": {
-      "area": "280㎡",
-      "usage": "F&B 라운지",
-      "structure": "철근콘크리트조",
-      "materials": "노출콘크리트, 오크원목, 스틸"
-    },
-    "gallery": [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80",
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1920&q=80",
-      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1920&q=80"
-    ]
-  },
-  {
     "id": "jeju-stay",
     "title": "제주 스테이",
     "location": "제주 서귀포시",
@@ -39,6 +18,27 @@
       "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1920&q=80",
       "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1920&q=80",
       "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?w=1920&q=80"
+    ]
+  },
+  {
+    "id": "cheongdam-lounge",
+    "title": "청담 라운지",
+    "location": "서울 강남구",
+    "year": "2024",
+    "category": "Commercial",
+    "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+    "description": "빛과 그림자의 대비를 통해 공간의 깊이를 만들어낸 라운지 공간. 자연광의 흐름을 고려한 개구부 설계로 시간에 따라 변화하는 분위기를 연출했다.",
+    "specs": {
+      "area": "280㎡",
+      "usage": "F&B 라운지",
+      "structure": "철근콘크리트조",
+      "materials": "노출콘크리트, 오크원목, 스틸"
+    },
+    "gallery": [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1920&q=80",
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1920&q=80"
     ]
   },
   {
