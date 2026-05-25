@@ -933,6 +933,26 @@ button {
   display: block;
 }
 
+.gallery-text-block {
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.gallery-text-block__heading {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--spacing-md);
+}
+
+.gallery-text-block__body {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  line-height: var(--leading-loose);
+  color: var(--color-text);
+  white-space: pre-line;
+}
+
 .detail-navigation {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -265,13 +265,31 @@ function initProjectDetail(projects) {
   const galleryContainer = detailPage.querySelector('.gallery-container');
   if (galleryContainer && project.gallery) {
     galleryContainer.innerHTML = '';
-    project.gallery.forEach((imgSrc) => {
-      const img = document.createElement('img');
-      img.className = 'gallery-image';
-      img.src = imgSrc;
-      img.alt = project.title;
-      img.loading = 'lazy';
-      galleryContainer.appendChild(img);
+    project.gallery.forEach((item) => {
+      if (typeof item === 'string' || item.type === 'image') {
+        const img = document.createElement('img');
+        img.className = 'gallery-image';
+        img.src = typeof item === 'string' ? item : item.url;
+        img.alt = project.title;
+        img.loading = 'lazy';
+        galleryContainer.appendChild(img);
+      } else if (item.type === 'text') {
+        const block = document.createElement('div');
+        block.className = 'gallery-text-block';
+        if (item.heading) {
+          const h = document.createElement('p');
+          h.className = 'gallery-text-block__heading';
+          h.textContent = item.heading;
+          block.appendChild(h);
+        }
+        if (item.body) {
+          const p = document.createElement('p');
+          p.className = 'gallery-text-block__body';
+          p.textContent = item.body;
+          block.appendChild(p);
+        }
+        galleryContainer.appendChild(block);
+      }
     });
   }
 

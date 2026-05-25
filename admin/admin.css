@@ -343,6 +343,29 @@ body {
 }
 .gallery-item.dragging { opacity: 0.4; }
 .gallery-item.drag-over { outline: 2px solid var(--black); border-radius: var(--radius); }
+.gallery-item--text { align-items: flex-start; padding: 8px; background: var(--gray-5); border-radius: var(--radius); }
+.gallery-text-fields { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.gallery-text-heading {
+  padding: 6px 10px;
+  border: 1px solid var(--gray-3);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+}
+.gallery-text-body {
+  padding: 6px 10px;
+  border: 1px solid var(--gray-3);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+}
+.gallery-text-heading:focus,
+.gallery-text-body:focus { border-color: var(--black); }
 .gallery-drag-handle {
   cursor: grab;
   color: var(--gray-3);

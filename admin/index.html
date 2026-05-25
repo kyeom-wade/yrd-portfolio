@@ -253,7 +253,10 @@
       <span id="gallery-upload-text">업로드 중...</span>
     </div>
     <div id="gallery-list" class="gallery-list" style="margin-top:10px;"></div>
-    <button class="btn btn-secondary btn-sm" onclick="addGalleryItem()" style="margin-bottom:20px;">+ URL로 추가</button>
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <button class="btn btn-secondary btn-sm" onclick="addGalleryItem()">+ URL로 추가</button>
+      <button class="btn btn-secondary btn-sm" onclick="addTextBlock()">+ 텍스트 추가</button>
+    </div>
 
     <div style="display:flex; gap:10px; justify-content:flex-end;">
       <button class="btn btn-secondary" onclick="closeModal()">취소</button>
@@ -574,7 +577,7 @@ function buildProjectFromForm() {
   const materials = document.getElementById('p-materials').value.trim();
   const image     = document.getElementById('p-image').value.trim();
   const thumbnail = document.getElementById('p-thumbnail').value.trim() || (image ? image.replace(/w=1920/, 'w=800') : '');
-  const gallery   = getGalleryUrls();
+  const gallery   = getGalleryItems();
   const id        = title ? title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9가-힣-]/g, '') + '-' + Date.now() % 10000 : 'project-' + Date.now();
 
   return { id, title, location, year, category, image, thumbnail, description: desc,
@@ -702,10 +705,18 @@ function compressImage(file, maxWidth, quality) {
 }
 
 // ── Gallery ────────────────────────────────────
-function renderGalleryList(urls) {
+function renderGalleryList(items) {
   const el = document.getElementById('gallery-list');
   el.innerHTML = '';
-  urls.forEach(url => addGalleryItem(url));
+  items.forEach(item => {
+    if (typeof item === 'string') {
+      addGalleryItem(item);
+    } else if (item.type === 'text') {
+      addTextBlock(item.heading, item.body);
+    } else {
+      addGalleryItem(item.url || '');
+    }
+  });
 }
 
 let galleryDragSrc = null;
@@ -721,6 +732,32 @@ function addGalleryItem(url = '') {
     <input type="url" value="${escHtml(url)}" placeholder="https://..." oninput="updateGalleryPreview(this)">
     <button class="gallery-remove" onclick="this.closest('.gallery-item').remove()" title="삭제">&times;</button>
   `;
+  attachGalleryDrag(div);
+  el.appendChild(div);
+}
+
+function updateGalleryPreview(input) {
+  input.previousElementSibling.src = input.value;
+}
+
+function addTextBlock(heading = '', body = '') {
+  const el  = document.getElementById('gallery-list');
+  const div = document.createElement('div');
+  div.className = 'gallery-item gallery-item--text';
+  div.draggable = true;
+  div.innerHTML = `
+    <span class="gallery-drag-handle" title="드래그하여 순서 변경">⠿</span>
+    <div class="gallery-text-fields">
+      <input type="text" class="gallery-text-heading" value="${escHtml(heading)}" placeholder="제목 (선택)">
+      <textarea class="gallery-text-body" placeholder="본문 텍스트" rows="3">${escHtml(body)}</textarea>
+    </div>
+    <button class="gallery-remove" onclick="this.closest('.gallery-item').remove()" title="삭제">&times;</button>
+  `;
+  attachGalleryDrag(div);
+  el.appendChild(div);
+}
+
+function attachGalleryDrag(div) {
   div.addEventListener('dragstart', e => {
     galleryDragSrc = div;
     e.dataTransfer.effectAllowed = 'move';
@@ -748,15 +785,20 @@ function addGalleryItem(url = '') {
     else list.insertBefore(galleryDragSrc, div);
     galleryDragSrc = null;
   });
-  el.appendChild(div);
 }
 
-function updateGalleryPreview(input) {
-  input.previousElementSibling.src = input.value;
-}
-
-function getGalleryUrls() {
-  return [...document.querySelectorAll('#gallery-list input')].map(i => i.value.trim()).filter(Boolean);
+function getGalleryItems() {
+  return [...document.querySelectorAll('#gallery-list .gallery-item')].map(item => {
+    if (item.classList.contains('gallery-item--text')) {
+      const heading = item.querySelector('.gallery-text-heading').value.trim();
+      const body    = item.querySelector('.gallery-text-body').value.trim();
+      if (!heading && !body) return null;
+      return { type: 'text', heading, body };
+    } else {
+      const url = item.querySelector('input[type="url"]').value.trim();
+      return url ? { type: 'image', url } : null;
+    }
+  }).filter(Boolean);
 }
 
 function previewMainImage(input) { previewMainImageSrc(input.value); }
