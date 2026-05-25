@@ -16,6 +16,7 @@
 
   /* Type Scale */
   --text-sm:   0.75rem;    /* 12px — labels, meta, nav */
+  --text-md:   0.9375rem;  /* 15px — gallery text blocks */
   --text-base: 1.125rem;   /* 18px — body, section labels, card text */
   --text-lg:   1.5rem;     /* 24px — section titles */
   --text-xl:   2rem;       /* 32px — hero overlay title */
@@ -939,7 +940,7 @@ button {
 
 .gallery-text-block__heading {
   font-family: var(--font-serif);
-  font-size: var(--text-base);
+  font-size: var(--text-md);
   font-weight: 600;
   letter-spacing: var(--tracking-tight);
   margin-bottom: var(--spacing-md);
@@ -947,7 +948,7 @@ button {
 
 .gallery-text-block__body {
   font-family: var(--font-serif);
-  font-size: var(--text-base);
+  font-size: var(--text-md);
   line-height: var(--leading-loose);
   color: var(--color-text);
   white-space: pre-line;
