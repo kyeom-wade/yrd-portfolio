@@ -760,7 +760,7 @@ body.loaded {
   height: 85vh;
   height: calc(var(--vh, 1vh) * 85);
   overflow: hidden;
-  margin-top: 80px;
+  margin-top: 56px;
 }
 
 .hero-image-container {
@@ -1134,7 +1134,7 @@ body.loaded {
 
   /* Project Detail Mobile */
   .detail-hero {
-    margin-top: 60px;
+    margin-top: 56px;
   }
 
   .detail-title {
