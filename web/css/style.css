@@ -902,7 +902,7 @@ button {
 .gallery-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2px;
+  gap: 10px;
 }
 
 .gallery-image {
