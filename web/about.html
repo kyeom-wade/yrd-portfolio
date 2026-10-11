@@ -3,42 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About — YRD</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <title>회사 소개 — YRD</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="top-header header-white">
-    <div class="header-content">
+  <header class="site-header">
+    <div class="header-inner">
       <a href="index.html" class="header-brand">yrd</a>
-      <button class="menu-btn" id="menuBtn">Menu</button>
-
+      <nav class="header-nav">
+        <a href="about.html" data-nav="about">회사 소개</a>
+        <a href="works.html" data-nav="works">프로젝트</a>
+        <a href="contact.html" data-nav="contact">문의</a>
+      </nav>
+      <div class="header-actions">
+        <button class="menu-btn" id="menuBtn" aria-label="메뉴 열기">Menu</button>
+      </div>
     </div>
   </header>
 
   <main class="about-page">
-    <section class="about-hero">
-      <img class="about-hero-image" src="" alt="YRD" loading="eager">
+    <section class="container about-head">
+      <h1 class="about-headline" data-about="headline">회사 소개</h1>
+      <p class="about-tagline" data-about="tagline"></p>
     </section>
 
-    <section class="about-body">
-      <div class="about-text">
-        <p class="about-paragraph"></p>
+    <section class="container about-vision">
+      <p class="vision-label">비전</p>
+      <div class="vision-body">
+        <h2 class="vision-title" data-about="visionTitle"></h2>
+        <p class="vision-text" data-about="intro"></p>
+      </div>
+    </section>
+
+    <figure class="about-hero" hidden>
+      <img class="about-hero-image" src="" alt="여름디자인 스튜디오" loading="eager">
+    </figure>
+
+    <section class="container about-section" data-about-section="principles" hidden>
+      <h2 class="section-title">우리가 일하는 방식</h2>
+      <div class="principle-grid" id="principleGrid"></div>
+    </section>
+
+    <section class="container about-section about-history" data-about-section="history" hidden>
+      <h2 class="section-title" data-about="historyTitle"></h2>
+      <div class="timeline"></div>
+    </section>
+
+    <section class="container">
+      <div class="cta-box">
+        <div>
+          <p class="cta-title">함께 만들 공간이 있나요?</p>
+          <p class="cta-sub">작은 고민부터 편하게 이야기 나눠요.</p>
+        </div>
+        <a href="contact.html" class="btn-primary">문의하기</a>
       </div>
     </section>
   </main>
 
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-brand">yeorum design studio</p>
+      <p class="footer-info" data-footer-info></p>
+      <p class="footer-copy">© <span data-year></span> yeorum design studio. All rights reserved.</p>
+    </div>
+  </footer>
+
   <div class="menu-overlay" id="menuOverlay">
-    <a href="index.html" class="overlay-brand"><span class="ob-l">y</span><span class="ob-f ob-f1"><span class="ob-fi">eo</span></span><span class="ob-l">r</span><span class="ob-f ob-f2"><span class="ob-fi">um </span></span><span class="ob-l">d</span><span class="ob-f ob-f3"><span class="ob-fi">esign studio</span></span></a>
+    <a href="index.html" class="overlay-brand"><span class="ob-l">y</span><span class="ob-f ob-f1"><span class="ob-fi">eo</span></span><span class="ob-l">r</span><span class="ob-f ob-f2"><span class="ob-fi">um&nbsp;</span></span><span class="ob-l">d</span><span class="ob-f ob-f3"><span class="ob-fi">esign studio</span></span></a>
     <button class="menu-close" id="menuClose">Close</button>
     <nav class="overlay-nav">
-      <a href="about.html">About</a>
-      <a href="works.html">Project</a>
-      <a href="contact.html">Contact</a>
+      <a href="about.html">회사 소개</a>
+      <a href="works.html">프로젝트</a>
+      <a href="contact.html">문의</a>
     </nav>
   </div>
 

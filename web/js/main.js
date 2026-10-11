@@ -2,7 +2,7 @@
    YRD Portfolio - Main Script
    ============================================ */
 
-// --- Menu Overlay ---
+// --- Menu Overlay (mobile) ---
 (function () {
   const menuBtn = document.getElementById('menuBtn');
   const menuClose = document.getElementById('menuClose');
@@ -16,6 +16,7 @@
   function openMenu() {
     clearTimeout(resetTimer);
     menuOverlay.classList.add('is-open');
+    document.body.classList.add('no-scroll');
     // Step 2: yrd spreads and full text fades in
     morphTimer = setTimeout(() => {
       if (overlayBrand) overlayBrand.classList.add('is-morphed');
@@ -25,6 +26,7 @@
   function closeMenu() {
     clearTimeout(morphTimer);
     menuOverlay.classList.remove('is-open');
+    document.body.classList.remove('no-scroll');
     // Reset after overlay fades out so the reverse animation isn't visible
     resetTimer = setTimeout(() => {
       if (overlayBrand) overlayBrand.classList.remove('is-morphed');
@@ -41,7 +43,22 @@
   });
 })();
 
-// --- Data Loader ---
+// --- Header: active nav + scrolled border ---
+(function () {
+  const header = document.querySelector('.site-header');
+  if (!header) return;
+
+  const page = location.pathname.split('/').pop() || 'index.html';
+  const key = page.startsWith('project-detail') ? 'works' : page.replace('.html', '');
+  const active = header.querySelector(`[data-nav="${key}"]`);
+  if (active) active.classList.add('active');
+
+  const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 4);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+})();
+
+// --- Helpers ---
 async function loadJSON(path) {
   try {
     const res = await fetch(path);
@@ -54,164 +71,234 @@ async function loadJSON(path) {
   }
 }
 
-
-// --- Viewport Height Detection ---
-function setFillHeight() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
+function esc(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
 }
 
-function initViewportHeight() {
-  setFillHeight();
-  window.addEventListener('resize', setFillHeight);
+const detailUrl = project => `project-detail.html?id=${encodeURIComponent(project.id)}`;
+
+// --- Cards ---
+function postCard(project) {
+  const meta = [project.location, project.year].filter(Boolean).map(esc).join(' · ');
+  return `
+    <a class="post-card" href="${detailUrl(project)}">
+      <div class="post-thumb">
+        <img src="${esc(project.thumbnail || project.image)}" alt="" loading="lazy">
+      </div>
+      <h3 class="post-title">${esc(project.title)}</h3>
+      <p class="post-meta">${meta}</p>
+    </a>`;
 }
 
+// --- Home Hero (single key visual) ---
+function initHero(items) {
+  const hero = document.querySelector('.hero-banner');
+  if (!hero) return;
 
-// --- Hero Slider ---
-function initHeroSlider(projects) {
-  const hero = document.querySelector('.hero');
-  if (!hero || !projects || projects.length === 0) return;
+  const item = (items || []).find(i => i.image);
+  if (!item) { hero.hidden = true; return; }
 
-  const slidesContainer = hero.querySelector('.hero-slides');
-  const titleEl = hero.querySelector('.project-title');
-  const metaEl = hero.querySelector('.project-meta');
-  const counterText = hero.querySelector('.counter-text');
-  const prevBtn = hero.querySelector('.prev-btn');
-  const nextBtn = hero.querySelector('.next-btn');
-  const progressBar = hero.querySelector('.progress-bar');
+  hero.querySelector('.hero-image').src = item.image;
+}
 
-  let currentIndex = 0;
-  let autoplayTimer = null;
-  const autoplayInterval = 10000;
+// --- Home ---
+function initHome(home, about) {
+  const lead = document.querySelector('[data-home-lead]');
+  if (lead && home && home.projectsBody) {
+    // Split into words so each one can fill in as the visitor scrolls
+    // Line breaks in the copy become real line breaks
+    lead.innerHTML = home.projectsBody.trim().split(/\n+/)
+      .map(line => line.trim().split(/\s+/).map(w => `<span class="word">${esc(w)}</span>`).join(' '))
+      .join('<br>');
+  }
 
-  projects.forEach((project, i) => {
-    const slide = document.createElement('div');
-    slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
-    slide.style.backgroundImage = `url(${project.image})`;
-    slidesContainer.appendChild(slide);
-  });
+  // "How we work" story — reuses the principles from the About page
+  const steps = ((about && about.principles) || []).filter(p => p.title || p.body);
+  const story = document.getElementById('story');
+  if (story && steps.length) {
+    story.querySelector('.story-steps').innerHTML = steps.map((p, i) => `
+      <li class="story-step" data-index="${i}">
+        ${p.image ? `<div class="story-step-img"><img src="${esc(p.image)}" alt="" loading="lazy"></div>` : ''}
+        <h3 class="story-title">${esc(p.title)}</h3>
+        <p class="story-text">${esc(p.body)}</p>
+      </li>`).join('');
+    story.querySelector('.story-visual').innerHTML = steps.map((p, i) =>
+      p.image ? `<img class="story-frame" data-index="${i}" src="${esc(p.image)}" alt="" loading="lazy">` : '').join('');
+    story.hidden = false;
+  }
 
-  const slides = slidesContainer.querySelectorAll('.hero-slide');
+  initHomeScroll();
+}
 
-  function updateInfo(index) {
-    const project = projects[index];
+// --- Home: scroll-driven interactions ---
+function initHomeScroll() {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const desktop = window.matchMedia('(min-width: 769px)');
+  const reveals = document.querySelectorAll('[data-reveal]');
 
-    titleEl.style.animation = 'none';
-    metaEl.style.animation = 'none';
-    titleEl.offsetHeight;
-    metaEl.offsetHeight;
+  // Fade-up reveal
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    reveals.forEach(el => el.classList.add('is-visible'));
+  } else {
+    document.body.classList.add('has-reveal');
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -10% 0px' });
+    reveals.forEach(el => io.observe(el));
+  }
 
-    titleEl.innerHTML = '';
-    const line1 = document.createElement('span');
-    line1.textContent = project.title || '';
-    titleEl.appendChild(line1);
-    if (project.title2) {
-      titleEl.appendChild(document.createElement('br'));
-      const line2 = document.createElement('span');
-      line2.textContent = project.title2;
-      titleEl.appendChild(line2);
+  const words = [...document.querySelectorAll('.home-statement .word')];
+  if (reduceMotion) {
+    words.forEach(w => w.classList.add('is-on'));
+    return;
+  }
+
+  const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 56;
+  const clamp = (v, min = 0, max = 1) => Math.min(max, Math.max(min, v));
+
+  const stage = document.querySelector('.hero-stage');
+  const banner = document.querySelector('.hero-banner');
+  const statement = document.querySelector('.home-statement');
+  const steps = [...document.querySelectorAll('.story-step')];
+  const frames = [...document.querySelectorAll('.story-frame')];
+  const story = document.getElementById('story');
+  const storySticky = story?.querySelector('.story-sticky');
+  let storyPinned = false;
+  let stepDistance = 0;
+  let activeStep = -1;
+
+  document.body.classList.add('has-scroll-fx');
+
+  function update() {
+    const vh = window.innerHeight;
+
+    // 1. Hero shrinks from full-screen into a shorter, inset rounded card.
+    //    It sits behind the header, so the card's top clears the compact header.
+    if (stage && banner) {
+      const distance = stage.offsetHeight - banner.offsetHeight;
+      const p = clamp(-stage.getBoundingClientRect().top / Math.max(distance, 1));
+      const W = window.innerWidth;
+      const H = banner.offsetHeight;
+      const containerEdge = Math.max(24, (W - 1100) / 2);
+      const x = (desktop.matches ? containerEdge : 20) * p;
+      const topEnd = header + (desktop.matches ? 24 : 16);
+      // Final card height: ~60% of the screen on desktop, a 4:5 card on mobile
+      const cardEnd = desktop.matches
+        ? Math.max(360, Math.min(vh * 0.6, 640))
+        : Math.min((W - 40) * 1.25, H - topEnd - 16);
+      const bottomEnd = Math.max(0, H - topEnd - cardEnd);
+      const top = topEnd * p;
+      const bottom = bottomEnd * p;
+      banner.style.clipPath = `inset(${top}px ${x}px ${bottom}px round ${28 * p}px)`;
+      banner.style.setProperty('--hero-p', p.toFixed(3));
+      banner.style.setProperty('--clip-top', `${top}px`);
+      banner.style.setProperty('--clip-bottom', `${bottom}px`);
+      // Pull the next section up so there's no empty gap under the finished card
+      stage.style.marginBottom = `${-bottomEnd}px`;
     }
-    metaEl.innerHTML = `<span>${project.location}</span><span>${project.year}</span>`;
-    if (counterText) counterText.textContent = `${index + 1} / ${projects.length}`;
 
-    titleEl.style.animation = 'fadeInUp 0.8s 0.3s forwards';
-    metaEl.style.animation = 'fadeInUp 0.8s 0.5s forwards';
+    // 2. Statement fills in word by word
+    if (statement && words.length) {
+      const r = statement.getBoundingClientRect();
+      const p = clamp((vh * 0.85 - r.top) / (vh * 0.5 + r.height * 0.5));
+      const lit = Math.round(p * words.length);
+      words.forEach((w, i) => w.classList.toggle('is-on', i < lit));
+    }
+
+    // 3. Story: the whole block is pinned; scroll progress picks the step
+    if (steps.length) {
+      let next = 0;
+      if (storyPinned) {
+        const r = story.getBoundingClientRect();
+        const p = clamp((header - r.top) / Math.max(stepDistance * (steps.length - 1), 1));
+        // Equal share of the scroll for every step
+        next = Math.min(steps.length - 1, Math.floor(p * steps.length));
+      } else {
+        let best = Infinity;
+        steps.forEach((el, i) => {
+          const r = el.getBoundingClientRect();
+          const d = Math.abs(r.top + r.height / 2 - vh / 2);
+          if (d < best) { best = d; next = i; }
+        });
+      }
+      if (next !== activeStep) {
+        activeStep = next;
+        steps.forEach((s, i) => s.classList.toggle('is-active', i === next));
+        frames.forEach(f => f.classList.toggle('is-active', +f.dataset.index === next));
+      }
+    }
   }
 
-  function goToSlide(index) {
-    slides[currentIndex].classList.remove('active');
-    currentIndex = (index + projects.length) % projects.length;
-    slides[currentIndex].classList.add('active');
-    updateInfo(currentIndex);
-    resetAutoplay();
+  // Pinned story: give each step ~60% of a screen of scroll
+  function layout() {
+    storyPinned = !!(story && desktop.matches && steps.length > 1);
+    if (storyPinned) {
+      stepDistance = window.innerHeight * 0.6;
+      story.style.height = `${storySticky.offsetHeight + stepDistance * (steps.length - 1)}px`;
+    } else if (story) {
+      story.style.height = '';
+    }
+    activeStep = -1;
+    update();
   }
 
-  function nextSlide() { goToSlide(currentIndex + 1); }
-  function prevSlide() { goToSlide(currentIndex - 1); }
+  // Clicking a step jumps to its scroll position
+  steps.forEach((step, i) => step.addEventListener('click', () => {
+    if (!storyPinned) return;
+    const top = story.getBoundingClientRect().top + window.scrollY - header;
+    const range = stepDistance * (steps.length - 1);
+    window.scrollTo({ top: top + range * (i + 0.5) / steps.length, behavior: 'smooth' });
+  }));
 
-  function resetAutoplay() {
-    clearInterval(autoplayTimer);
-    autoplayTimer = setInterval(nextSlide, autoplayInterval);
-  }
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { update(); ticking = false; });
+  };
 
-  updateInfo(0);
-  resetAutoplay();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', layout);
+  desktop.addEventListener('change', layout);
+  layout();
 }
 
 // --- Works Page ---
-function initWorksGrid(projects) {
+const PAGE_SIZE = 9;
+
+function initWorks(projects) {
   const grid = document.querySelector('.works-grid');
   if (!grid || !projects) return;
 
-  projects.forEach((project) => {
-    const card = document.createElement('div');
-    card.className = 'work-card';
-    card.dataset.category = project.category;
-    card.dataset.year = project.year;
-    card.innerHTML = `
-      <img class="card-image" src="${project.thumbnail || project.image}" alt="${project.title}" loading="lazy">
-      <div class="card-overlay">
-        <h3 class="card-title">${project.title}</h3>
-        <p class="card-meta">${project.location} · ${project.year}</p>
-      </div>
-    `;
-    card.addEventListener('click', () => {
-      window.location.href = `project-detail.html?id=${project.id}`;
-    });
-    grid.appendChild(card);
-  });
+  const pagination = document.querySelector('.pagination');
+  const emptyState = document.querySelector('.empty-state');
+  const pages = Math.max(1, Math.ceil(projects.length / PAGE_SIZE));
+  let page = 1;
 
-  initFilterButtons(projects);
-}
+  function render() {
+    const start = (page - 1) * PAGE_SIZE;
+    grid.innerHTML = projects.slice(start, start + PAGE_SIZE).map(postCard).join('');
+    emptyState.hidden = projects.length > 0;
 
-// --- Filter Buttons ---
-function initFilterButtons(projects) {
-  const catContainer  = document.getElementById('filter-category');
-  const yearContainer = document.getElementById('filter-year');
-  if (!catContainer || !yearContainer) return;
-
-  const categories = ['all', ...new Set(projects.map(p => p.category).filter(Boolean))];
-  const years      = ['all', ...[...new Set(projects.map(p => p.year).filter(Boolean))].sort((a, b) => b - a)];
-
-  const makeBtn = (value, type) => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + (value === 'all' ? ' active' : '');
-    btn.textContent = value === 'all' ? 'All' : value;
-    btn.dataset[type] = value;
-    return btn;
-  };
-
-  categories.forEach(c => catContainer.appendChild(makeBtn(c, 'category')));
-  years.forEach(y => yearContainer.appendChild(makeBtn(y, 'year')));
-
-  let activeCategory = 'all';
-  let activeYear     = 'all';
-
-  function applyFilters() {
-    document.querySelectorAll('.work-card').forEach(card => {
-      const matchCat  = activeCategory === 'all' || card.dataset.category === activeCategory;
-      const matchYear = activeYear     === 'all' || card.dataset.year     === activeYear;
-      card.classList.toggle('hidden', !(matchCat && matchYear));
-    });
+    if (pages <= 1) { pagination.innerHTML = ''; return; }
+    const nums = Array.from({ length: pages }, (_, i) => i + 1);
+    pagination.innerHTML = `
+      <button class="page-arrow" data-page="${page - 1}" ${page === 1 ? 'disabled' : ''} aria-label="이전 페이지">←</button>
+      ${nums.map(n => `<button class="page-num${n === page ? ' active' : ''}" data-page="${n}">${n}</button>`).join('')}
+      <button class="page-arrow" data-page="${page + 1}" ${page === pages ? 'disabled' : ''} aria-label="다음 페이지">→</button>`;
   }
 
-  catContainer.addEventListener('click', e => {
-    const btn = e.target.closest('.filter-btn');
-    if (!btn) return;
-    catContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeCategory = btn.dataset.category;
-    applyFilters();
+  pagination.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-page]');
+    if (!btn || btn.disabled) return;
+    page = Number(btn.dataset.page);
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  yearContainer.addEventListener('click', e => {
-    const btn = e.target.closest('.filter-btn');
-    if (!btn) return;
-    yearContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeYear = btn.dataset.year;
-    applyFilters();
-  });
+  render();
 }
 
 // --- Project Detail Page ---
@@ -219,66 +306,52 @@ function initProjectDetail(projects) {
   const detailPage = document.querySelector('.project-detail-page');
   if (!detailPage || !projects) return;
 
-  // Get project ID from URL parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const projectId = urlParams.get('id');
-
-  if (!projectId) {
-    window.location.href = 'works.html';
-    return;
-  }
-
-  // Find the project
+  const projectId = new URLSearchParams(window.location.search).get('id');
   const projectIndex = projects.findIndex(p => p.id === projectId);
-  if (projectIndex === -1) {
+  if (!projectId || projectIndex === -1) {
     window.location.href = 'works.html';
     return;
   }
 
   const project = projects[projectIndex];
-
-  // Update page title
   document.title = `${project.title} — YRD`;
 
-  // Populate hero image
   const heroImage = detailPage.querySelector('.detail-hero-image');
   if (heroImage) {
     heroImage.src = project.image;
     heroImage.alt = project.title;
   }
 
-  // Populate info
-  const titleEl = detailPage.querySelector('.detail-title');
-  const locationEl = detailPage.querySelector('.meta-item.location');
-  const yearEl = detailPage.querySelector('.meta-item.year');
-  const categoryEl = detailPage.querySelector('.meta-item.category');
-  const descriptionEl = detailPage.querySelector('.description-text');
+  const setText = (sel, val) => {
+    const el = detailPage.querySelector(sel);
+    if (!el) return;
+    el.textContent = val || '';
+    el.hidden = !val;
+  };
 
-  if (titleEl) titleEl.textContent = project.title;
-  if (locationEl) locationEl.textContent = project.location;
-  if (yearEl) yearEl.textContent = project.year;
-  if (categoryEl) categoryEl.textContent = project.category;
-  if (descriptionEl) descriptionEl.textContent = project.description;
+  setText('.detail-title', project.title);
+  setText('.meta-item.category', project.category);
+  setText('.meta-item.location', project.location);
+  setText('.meta-item.year', project.year);
+  setText('.description-text', project.description);
 
-  // Populate specs
-  const clientEl = detailPage.querySelector('.spec-client');
-  const specYearEl = detailPage.querySelector('.spec-year');
-  if (clientEl) clientEl.textContent = project.specs?.client || '';
-  if (specYearEl) specYearEl.textContent = project.year || '';
+  // Specs — hide rows without a value
+  const specs = {
+    '.spec-client': project.specs?.client,
+    '.spec-year': project.year,
+    '.spec-area': project.specs?.area,
+    '.spec-usage': project.specs?.usage,
+    '.spec-structure': project.specs?.structure,
+    '.spec-materials': project.specs?.materials,
+  };
+  Object.entries(specs).forEach(([sel, val]) => {
+    const dd = detailPage.querySelector(sel);
+    if (!dd) return;
+    dd.textContent = val || '';
+    dd.closest('.spec-item').hidden = !val;
+  });
 
-  if (project.specs) {
-    const areaEl = detailPage.querySelector('.spec-area');
-    const usageEl = detailPage.querySelector('.spec-usage');
-    const structureEl = detailPage.querySelector('.spec-structure');
-    const materialsEl = detailPage.querySelector('.spec-materials');
-
-    if (areaEl) areaEl.textContent = project.specs.area || '';
-    if (usageEl) usageEl.textContent = project.specs.usage || '';
-    if (structureEl) structureEl.textContent = project.specs.structure || '';
-    if (materialsEl) materialsEl.textContent = project.specs.materials || '';
-  }
-
-  // Populate gallery
+  // Gallery
   const galleryContainer = detailPage.querySelector('.gallery-container');
   if (galleryContainer && project.gallery) {
     galleryContainer.innerHTML = '';
@@ -310,23 +383,15 @@ function initProjectDetail(projects) {
     });
   }
 
-  // Setup navigation
-  const prevNav = detailPage.querySelector('.nav-prev');
-  const nextNav = detailPage.querySelector('.nav-next');
-
-  if (projectIndex > 0) {
-    const prevProject = projects[projectIndex - 1];
-    prevNav.href = `project-detail.html?id=${prevProject.id}`;
-    prevNav.querySelector('.nav-title').textContent = prevProject.title;
-    prevNav.style.display = 'flex';
-  }
-
-  if (projectIndex < projects.length - 1) {
-    const nextProject = projects[projectIndex + 1];
-    nextNav.href = `project-detail.html?id=${nextProject.id}`;
-    nextNav.querySelector('.nav-title').textContent = nextProject.title;
-    nextNav.style.display = 'flex';
-  }
+  // Prev / next
+  const linkNav = (el, target) => {
+    if (!el || !target) return;
+    el.href = detailUrl(target);
+    el.querySelector('.nav-title').textContent = target.title;
+    el.hidden = false;
+  };
+  linkNav(detailPage.querySelector('.nav-prev'), projects[projectIndex - 1]);
+  linkNav(detailPage.querySelector('.nav-next'), projects[projectIndex + 1]);
 }
 
 // --- Contact Page ---
@@ -346,151 +411,134 @@ function initContact(data) {
   set('[data-field="hours"]', data.hours.replace(/\n/g, '<br>'));
 }
 
-// --- Home Featured Works Carousel ---
-function initHomeFeaturedWorks(projects) {
-  const grid = document.querySelector('.home-works-grid');
-  const prevBtn = document.querySelector('.carousel-prev');
-  const nextBtn = document.querySelector('.carousel-next');
+// --- Footer ---
+function initFooter(contact) {
+  document.querySelectorAll('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
+  const info = document.querySelector('[data-footer-info]');
+  if (!info || !contact) return;
+  info.innerHTML = [contact.address, contact.phone, contact.email]
+    .filter(Boolean)
+    .map(v => `<span>${esc(v).replace(/\n/g, ' ')}</span>`)
+    .join('');
+}
 
-  if (!grid || !projects) return;
+// --- About Page ---
+function initAbout(data, projects) {
+  if (!data) return;
+  projects = projects || [];
 
-  // Show first 8 projects for carousel
-  const featuredProjects = projects.slice(0, 8);
-
-  featuredProjects.forEach((project) => {
-    const card = document.createElement('div');
-    card.className = 'home-work-card';
-    card.innerHTML = `
-      <img src="${project.thumbnail || project.image}" alt="${project.title}" loading="lazy">
-      <div class="home-work-info">
-        <h3>${project.title}</h3>
-        <p>${project.location}<br>${project.year}</p>
-      </div>
-    `;
-
-    card.addEventListener('click', () => {
-      window.location.href = `project-detail.html?id=${project.id}`;
-    });
-
-    grid.appendChild(card);
+  const set = (key, val) => {
+    const el = document.querySelector(`[data-about="${key}"]`);
+    if (el && val) el.textContent = val;
+  };
+  set('headline', data.headline);
+  set('tagline', data.tagline);
+  set('visionTitle', data.visionTitle);
+  set('historyTitle', data.historyTitle);
+  set('intro', data.intro || data.body);
+  document.querySelectorAll('[data-about="tagline"], [data-about="visionTitle"]').forEach(el => {
+    el.hidden = !el.textContent.trim();
   });
 
-  // Carousel controls
-  let currentPosition = 0;
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  const cardsPerView = isMobile ? 2 : 4;
-  const maxPosition = Math.max(0, featuredProjects.length - cardsPerView);
-
-  function updateCarousel() {
-    const cardWidth = grid.querySelector('.home-work-card').offsetWidth;
-    const gap = parseInt(getComputedStyle(grid).gap);
-    const translateX = -currentPosition * (cardWidth + gap);
-    grid.style.transform = `translateX(${translateX}px)`;
-
-    // Update button states
-    if (prevBtn) prevBtn.disabled = currentPosition === 0;
-    if (nextBtn) nextBtn.disabled = currentPosition >= maxPosition;
+  // Studio photo — fall back to the first project image until one is uploaded
+  const heroSrc = data.image || projects[0]?.image;
+  const hero = document.querySelector('.about-hero');
+  if (hero && heroSrc) {
+    hero.querySelector('img').src = heroSrc;
+    hero.hidden = false;
   }
 
-  if (prevBtn) {
-    prevBtn.addEventListener('click', () => {
-      if (currentPosition > 0) {
-        currentPosition--;
-        updateCarousel();
-      }
-    });
+  const principles = (data.principles || []).filter(p => p.title || p.body);
+  if (principles.length) {
+    document.getElementById('principleGrid').innerHTML = principles.map(p => `
+      <div class="principle">
+        ${p.image ? `<div class="principle-img"><img src="${esc(p.image)}" alt="" loading="lazy"></div>` : ''}
+        <h3 class="principle-title">${esc(p.title)}</h3>
+        <p class="principle-body">${esc(p.body)}</p>
+      </div>`).join('');
+    document.querySelector('[data-about-section="principles"]').hidden = false;
   }
 
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      if (currentPosition < maxPosition) {
-        currentPosition++;
-        updateCarousel();
-      }
-    });
-  }
+  initHistory(data, projects);
+}
 
-  // Touch/swipe support
-  let touchStartX = 0;
-  let touchEndX = 0;
+// --- About: History timeline ---
+function initHistory(data, projects) {
+  const section = document.querySelector('[data-about-section="history"]');
+  if (!section) return;
 
-  grid.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-  }, { passive: true });
+  const yearOf = v => String(v || '').slice(0, 4);
+  // Custom milestones from the CMS + completed projects
+  const entries = [
+    ...(data.history || []).filter(h => h.year && h.title).map(h => ({
+      year: yearOf(h.year), title: h.title, body: h.body || '', image: h.image || '',
+    })),
+    ...projects.filter(p => p.year).map(p => ({
+      year: yearOf(p.year),
+      title: p.title,
+      body: [p.location, p.category].filter(Boolean).join(' · '),
+      image: p.thumbnail || p.image,
+      href: detailUrl(p),
+    })),
+  ];
+  if (!entries.length) return;
 
-  grid.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX - touchEndX;
+  const years = [...new Set(entries.map(e => e.year))].sort((a, b) => b - a);
 
-    if (Math.abs(diff) > 60) {
-      if (diff > 0 && currentPosition < maxPosition) {
-        currentPosition++;
-        updateCarousel();
-      } else if (diff < 0 && currentPosition > 0) {
-        currentPosition--;
-        updateCarousel();
-      }
-    }
-  }, { passive: true });
+  section.querySelector('.timeline').innerHTML = years.map(year => {
+    const rows = entries.filter(e => e.year === year).map(e => {
+      const tag = e.href ? 'a' : 'div';
+      const href = e.href ? ` href="${e.href}"` : '';
+      return `
+        <li>
+          <${tag} class="tl-row"${href}>
+            <span class="tl-thumb">${e.image ? `<img src="${esc(e.image)}" alt="" loading="lazy">` : ''}</span>
+            <span class="tl-title">${esc(e.title)}</span>
+            <span class="tl-meta">${esc(e.body)}</span>
+            ${e.href ? '<span class="tl-arrow" aria-hidden="true">→</span>' : '<span></span>'}
+          </${tag}>
+        </li>`;
+    }).join('');
+    return `
+      <div class="tl-group">
+        <p class="tl-year">${year}</p>
+        <ul class="tl-rows">${rows}</ul>
+      </div>`;
+  }).join('');
 
-  // Initialize
-  updateCarousel();
-
-  // Update on resize
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      const newIsMobile = window.matchMedia('(max-width: 768px)').matches;
-      if (newIsMobile !== isMobile) {
-        location.reload(); // Reload to recalculate
-      } else {
-        updateCarousel();
-      }
-    }, 250);
-  });
+  section.hidden = false;
 }
 
 // --- Init ---
 document.addEventListener('DOMContentLoaded', async () => {
-  initViewportHeight();
+  const [projects, contact] = await Promise.all([
+    loadJSON('data/projects.json'),
+    loadJSON('data/contact.json'),
+  ]);
 
-  const projects = await loadJSON('data/projects.json');
+  initFooter(contact);
 
-  if (document.querySelector('.hero')) {
-    const kv = await loadJSON('data/kv.json');
-    initHeroSlider(kv && kv.length ? kv : projects);
-    initHomeFeaturedWorks(projects);
+  if (document.querySelector('.home-page')) {
+    const [home, kv, about] = await Promise.all([
+      loadJSON('data/home.json'), loadJSON('data/kv.json'), loadJSON('data/about.json'),
+    ]);
+    initHero(kv && kv.length ? kv : projects);
+    initHome(home, about);
   }
 
-  if (document.querySelector('.works-grid')) {
-    initWorksGrid(projects);
+  if (document.querySelector('.works-page')) {
+    initWorks(projects);
   }
 
   if (document.querySelector('.project-detail-page')) {
     initProjectDetail(projects);
   }
 
-if (document.querySelector('.home-works')) {
-    const data = await loadJSON('data/home.json');
-    if (data) {
-      const bodyEl = document.querySelector('.section-body');
-      if (bodyEl && data.projectsBody) bodyEl.textContent = data.projectsBody;
-    }
-  }
-
   if (document.querySelector('.contact-page')) {
-    const data = await loadJSON('data/contact.json');
-    initContact(data);
+    initContact(contact);
   }
 
   if (document.querySelector('.about-page')) {
-    const data = await loadJSON('data/about.json');
-    if (data) {
-      const img = document.querySelector('.about-hero-image');
-      const para = document.querySelector('.about-paragraph');
-      if (img && data.image) img.src = data.image;
-      if (para && data.body) para.textContent = data.body;
-    }
+    initAbout(await loadJSON('data/about.json'), projects);
   }
 });

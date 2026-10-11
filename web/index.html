@@ -4,73 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YRD — Architecture & Space Design</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <!-- Page Transition -->
-
-  <!-- Top Header (Scroll Responsive) -->
-  <header class="top-header header-light">
-    <div class="header-content">
+<body class="page-home">
+  <header class="site-header">
+    <div class="header-inner">
       <a href="index.html" class="header-brand">yrd</a>
-      <button class="menu-btn" id="menuBtn">Menu</button>
-
+      <nav class="header-nav">
+        <a href="about.html" data-nav="about">회사 소개</a>
+        <a href="works.html" data-nav="works">프로젝트</a>
+        <a href="contact.html" data-nav="contact">문의</a>
+      </nav>
+      <div class="header-actions">
+        <button class="menu-btn" id="menuBtn" aria-label="메뉴 열기">Menu</button>
+      </div>
     </div>
   </header>
 
-  <!-- Hero Slider -->
-  <section class="hero">
-    <div class="hero-slides"></div>
-
-    <!-- Project Info -->
-    <div class="project-info">
-      <h2 class="project-title"></h2>
-      <p class="project-meta"></p>
+  <main class="home-page">
+    <div class="hero-stage">
+      <section class="hero-banner" aria-label="메인 배너">
+        <img class="hero-image" src="" alt="" fetchpriority="high">
+        <p class="hero-headline">Spaces that stay</p>
+      </section>
     </div>
 
-  </section>
+    <section class="container page-head">
+      <h1 class="page-title" data-reveal>yeorum design studio</h1>
+      <p class="home-statement" data-home-lead></p>
+    </section>
 
-<!-- Featured Works Section -->
-  <section class="home-works">
-    <div class="section-container">
-      <div class="section-top">
-        <div class="section-header">
-          <h2>Project</h2>
+    <section class="story" id="story" hidden>
+      <div class="story-sticky">
+        <div class="container">
+          <div class="story-head" data-reveal>
+            <h2 class="section-title">우리가 일하는 방식</h2>
+            <a href="about.html" class="text-link">회사 소개 <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="story-body">
+            <ol class="story-steps"></ol>
+            <div class="story-visual" aria-hidden="true"></div>
+          </div>
         </div>
-        <p class="section-body"></p>
       </div>
-      <div class="home-works-carousel">
-        <button class="carousel-btn carousel-prev" aria-label="이전 작품">&larr;</button>
-        <div class="home-works-track">
-          <div class="home-works-grid"></div>
-        </div>
-        <button class="carousel-btn carousel-next" aria-label="다음 작품">&rarr;</button>
-      </div>
-    </div>
-  </section>
+    </section>
 
-<!-- Contact CTA Section -->
-  <section class="home-contact">
-    <div class="section-container">
-      <div class="contact-cta">
-        <p>당신의 공간을 만들어보세요.</p>
-        <a href="contact.html" class="cta-button">Contact Us</a>
+    <section class="container">
+      <div class="cta-box" data-reveal>
+        <div>
+          <p class="cta-title">당신의 공간을 만들어보세요.</p>
+          <p class="cta-sub">새로운 프로젝트에 대해 이야기 나눠요.</p>
+        </div>
+        <a href="contact.html" class="btn-primary">문의하기</a>
       </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-brand">yeorum design studio</p>
+      <p class="footer-info" data-footer-info></p>
+      <p class="footer-copy">© <span data-year></span> yeorum design studio. All rights reserved.</p>
     </div>
-  </section>
+  </footer>
 
   <div class="menu-overlay" id="menuOverlay">
-    <a href="index.html" class="overlay-brand"><span class="ob-l">y</span><span class="ob-f ob-f1"><span class="ob-fi">eo</span></span><span class="ob-l">r</span><span class="ob-f ob-f2"><span class="ob-fi">um </span></span><span class="ob-l">d</span><span class="ob-f ob-f3"><span class="ob-fi">esign studio</span></span></a>
+    <a href="index.html" class="overlay-brand"><span class="ob-l">y</span><span class="ob-f ob-f1"><span class="ob-fi">eo</span></span><span class="ob-l">r</span><span class="ob-f ob-f2"><span class="ob-fi">um&nbsp;</span></span><span class="ob-l">d</span><span class="ob-f ob-f3"><span class="ob-fi">esign studio</span></span></a>
     <button class="menu-close" id="menuClose">Close</button>
     <nav class="overlay-nav">
-      <a href="about.html">About</a>
-      <a href="works.html">Project</a>
-      <a href="contact.html">Contact</a>
+      <a href="about.html">회사 소개</a>
+      <a href="works.html">프로젝트</a>
+      <a href="contact.html">문의</a>
     </nav>
   </div>
 
