@@ -131,7 +131,7 @@ body {
 }
 .app-header-brand {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 2px;
 }
 .app-header-right {
@@ -557,4 +557,64 @@ body {
   .modal { padding: 24px 20px; }
   .app-header { padding: 0 16px; }
   .app-main { padding: 24px 16px; }
+}
+
+/* ── About tab ── */
+.about-card {
+  background: var(--white);
+  border: 1px solid var(--gray-3);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.about-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.about-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.about-card-head .about-card-title {
+  margin-bottom: 0;
+}
+
+.about-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--gray-3);
+  border-radius: var(--radius);
+}
+
+.about-item-fields {
+  flex: 1;
+  min-width: 0;
+}
+
+.about-item-fields .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.about-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Max weight is 600 — override browser bold defaults */
+h1, h2, h3, h4, h5, h6, b, strong, th {
+  font-weight: 600;
 }

@@ -1,4 +1,26 @@
 {
+  "headline": "Spaces that stay",
+  "tagline": "머무는 사람의 시간을 담는 여름디자인",
+  "visionTitle": "땅과 빛을 먼저 읽고, 꼭 필요한 것만 더합니다",
+  "intro": "여름디자인은 건축과 공간을 설계하는 디자인 스튜디오입니다. 화려한 첫인상보다, 매일 그 공간을 쓰는 사람이 오래도록 편안한 장소를 만드는 일에 집중합니다.",
   "image": "",
-  "body": ""
+  "principles": [
+    {
+      "image": "https://images.unsplash.com/photo-1529047033375-f402d3da24ca?w=1200&q=80",
+      "title": "빛",
+      "body": "공간의 표정은 빛이 만듭니다. 해가 드는 방향과 시간을 먼저 살피고, 그에 맞춰 창과 벽의 자리를 정합니다."
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1531824475211-72594993ce2a?w=1200&q=80",
+      "title": "재료",
+      "body": "손에 닿고 눈에 머무는 재료를 신중하게 고릅니다. 시간이 지날수록 더 깊어지는 정직한 재료를 씁니다."
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1519145127298-00d5287fcdd3?w=1200&q=80",
+      "title": "시간",
+      "body": "유행보다 오래 남는 것을 생각합니다. 십 년 뒤에도 자연스러운 공간이 좋은 공간이라고 믿습니다."
+    }
+  ],
+  "historyTitle": "우리가 만들어온 공간들",
+  "history": []
 }
